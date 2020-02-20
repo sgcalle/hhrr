@@ -79,7 +79,7 @@ class Inquiry(models.Model):
     application_id = fields.Many2one("adm.application")
     forcing = False
     
-    @api.multi
+    
     def message_get_suggested_recipients(self):
         recipients = super().message_get_suggested_recipients() 
         try:
@@ -268,7 +268,7 @@ class Inquiry(models.Model):
             self.message_post_with_template(template_id=template_id.id, res_id=self.id)
             
 
-    @api.multi
+    
     def write(self, values):
 
         # print(self.task_ids)
@@ -299,14 +299,14 @@ class Inquiry(models.Model):
         
         return inquiry
 
-    @api.multi
+    
     def unlink(self):
         print("Borrado")
         return super(Inquiry, self).unlink()
 
     # Mail integration
     # message_follower_ids
-    @api.multi
+    
     def message_get_default_recipients(self):
         return {
             r.id : {'partner_ids': [],

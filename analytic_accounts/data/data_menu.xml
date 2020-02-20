@@ -17,13 +17,13 @@
     </record>
     
     <!-- Action for just see account -->
-    <record model="ir.actions.act_window" id="action_analytic_account_report_form">
+    <!-- <record model="ir.actions.act_window" id="action_analytic_account_report_form">
         <field name="name">Analytic account</field>
         <field name="res_model">account.analytic.account</field>
         <field name="view_mode">form</field>
         <field name="view_id" ref="view_analytic_account_report_form"/>
         <field name="target">inline</field>
-    </record>
+    </record> -->
 
 
     <!-- List of view of action -->
@@ -66,8 +66,8 @@
               action="action_analytic_account_graphics"
               name="Analytic Graphics"/>
               
-    <menuitem id="menu_analytic_account_report_form"
+    <!-- <menuitem id="menu_analytic_account_report_form"
               parent="menu_analytic_account_parent"
               action="action_analytic_account_report_form"
-              name="Analytic Reports"/>
+              name="Analytic Reports"/> -->
 </odoo>

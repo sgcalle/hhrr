@@ -57,7 +57,7 @@ class AnalyticAccounts(models.Model):
     sub_account_rel_code = fields.Char(string='Sub Account Code', related='sub_account.code')
     item_rel_code = fields.Char(string='Item Code', related='item.code')
     
-    @api.multi
+    
     def test_multi(self):
         print(self)
 
@@ -493,7 +493,7 @@ class AnalyticAccounts(models.Model):
                 return
             item_record.code = values["item_rel_code"]
 
-    @api.multi
+    
     def write(self, values):
         self.ensure_one()
         
@@ -538,7 +538,7 @@ class GroupBase(models.Model):
                     
         return super(GroupBase, self).create(values)
     
-    @api.multi
+    
     def write(self, values):
         
         print("Creando un grupo generico")

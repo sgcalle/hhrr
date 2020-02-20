@@ -194,7 +194,7 @@ class Application(models.Model):
 
     family_id = fields.Many2one(string="Family", related="partner_id.parent_id")
     
-    @api.multi
+    
     def message_get_suggested_recipients(self):
         recipients = super().message_get_suggested_recipients() 
         try:
@@ -283,7 +283,7 @@ class Application(models.Model):
         values['name'] = formatting.format_name(values['first_name'], values['middle_name'], values['last_name']) 
         return super(Application, self).create(values)
 
-    @api.multi
+    
     def write(self, values):
         
         status_ids = self.env['adm.application.status'].search([])

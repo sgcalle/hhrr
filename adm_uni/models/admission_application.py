@@ -105,7 +105,7 @@ class Application(models.Model):
     status_type = fields.Selection(string="Status Type", related="status_id.type")
     forcing = False
 
-    @api.multi
+    
     def message_get_suggested_recipients(self):
         recipients = super().message_get_suggested_recipients() 
         try:
@@ -189,7 +189,7 @@ class Application(models.Model):
         values['name'] = formatting.format_name(values['first_name'], values['middle_name'], values['last_name']) 
         return super(Application, self).create(values)
 
-    @api.multi
+    
     def write(self, values):
 
         status_ids = self.env['adm_uni.application.status'].search([])
@@ -204,7 +204,7 @@ class Application(models.Model):
 
         return super(Application, self).write(values)
 
-    @api.multi
+    
     def unlink(self):
         print("Borrado")
         return super(Application, self).unlink()
