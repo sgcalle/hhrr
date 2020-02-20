@@ -1,0 +1,18 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more infogigit  rmation, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Odoo V13",
+            "type": "python",
+            "request": "launch",
+            "program": "C:\\odoo\\Odoo_13e\\server\\odoo-bin",
+            "console": "integratedTerminal",
+            "args": [
+                // "--init=base",
+            ],
+        }
+    ]
+}
