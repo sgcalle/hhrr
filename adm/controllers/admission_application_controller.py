@@ -69,7 +69,7 @@ class Admission(http.Controller):
         message_body = message_body.replace("\n", "<br />\n")
         
         MessageEnv = http.request.env["mail.message"]
-        message_id = MessageEnv.create({
+        message_id = MessageEnv.sudo().create({
             'date': datetime.today(),
             'email_from': '"{}" <{}>'.format(contact_id.name, contact_id.email),
             'author_id': contact_id.id,
