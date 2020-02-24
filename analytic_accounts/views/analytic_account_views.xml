@@ -91,7 +91,7 @@
 							<group string="Departments">
 								<group colspan="2">
 									<group colspan="1">
-										<field name="department" context="{'default_code': self.test_foo()}"/>
+										<field name="department"/> <!-- context="{'default_code': self.test_foo()}"/> -->
 										<field name="department_rel_name" readonly="0" invisible="1"/>
 									</group>
 									<group colspan="1">
