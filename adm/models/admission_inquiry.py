@@ -12,7 +12,6 @@ status_types = [
 
 class StatusType(models.Model):
     _name = "adm.inquiry.status.type"
-
     name = fields.Char(string="Status Name")
 
 class Status(models.Model):
@@ -270,7 +269,7 @@ class Inquiry(models.Model):
                 "name": parent_id.name,
                 "partner_id": parent_id.id,
                 "login": parent_id.email,
-                "sel_groups_1_9_10": 9,
+                "sel_groups_1_8_9": 8,
             })
         else:
             template_id = self.env.ref('adm.email_template_data_inquiry_accepted')
