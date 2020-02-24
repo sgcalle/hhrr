@@ -4,8 +4,8 @@ from odoo import models, fields, api, exceptions, _
 from ..utils import formatting
 
 status_types = [
-        ("done", "Done"),
         ("stage", "Stage"),
+        ("done", "Done"),
         ("cancelled", "Cancelled")
 ]
 

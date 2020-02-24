@@ -4,8 +4,8 @@ from odoo import models, fields, api, exceptions, _
 from ..utils import formatting
 
 status_types = [
-        ("done", "Done"),
         ("stage", "Stage"),
+        ("done", "Done"),
         ("cancelled", "Cancelled")
 ]
     
@@ -26,7 +26,7 @@ class Status(models.Model):
     # type_id = fields.Many2one("adm.inquiry.status.type",string="Type", required=True)
     # type_name = fields.Char(related="type_id.name", string="Type Name")
 
-    type_id = fields.Selection(selection=status_types, string="Type")
+    type_id = fields.Selection(selection=status_types, string="Type", default="stage")
 
     task_ids = fields.One2many("adm.inquiry.task", "status_id", "Status Ids")
 
