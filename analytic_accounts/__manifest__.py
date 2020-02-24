@@ -28,6 +28,7 @@
         'views/templates.xml',
         "views/analytic_account_views.xml",
         "views/analytic_groups_views.xml",
+        "views/account_analytic_group_view.xml",
         "data/reports.xml",
         "data/data_menu.xml",
     ],

@@ -116,11 +116,14 @@
                                             State
                                             <span class="text-danger">*</span>
                                         </label>
-                                        <select type="text" class="custom-select" id="selState" name="selState"
-                                            placeholder="State" required="required">
-                                            <option disabled="disabled" selected="true" value='-1'>-Select a
-                                                state-
+                                        <select class="form-control" id="selState" name="selState">
+                                            <option selected="selected" disabled="disabled">Select a
+                                                state
                                             </option>
+                                            <t t-foreach="states" t-as="state">
+                                                <option t-att-value="state.id" t-field="state.name"
+                                                    t-att-data-country="state.country_id.id" />
+                                            </t>
                                         </select>
                                     </div>
                                 </div>
@@ -188,8 +191,6 @@
                                     <div class="tab-pane fade show active" id="student1" role="tabpanel"
                                         aria-labelledby="student1-tab">
 
-                                        !Student
-                                        Form;
                                         <div class="row">
                                             <div class="form-group col-12 col-md">
                                                 <label for="txtStudent1LastName">
@@ -228,8 +229,8 @@
                                             <div class="form-group col">
                                                 <label for="txtStudent1Birthday">Gender</label>
                                                 <select class="custom-select" name="selStudentGender">
-                                                    <option value="m">Male</option>
-                                                    <option value="f">Female</option>
+                                                    <option value="gender_male">Male</option>
+                                                    <option value="gender_female">Female</option>
                                                 </select>
                                             </div>
                                         </div>

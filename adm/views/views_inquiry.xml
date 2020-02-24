@@ -64,7 +64,6 @@
                         class="btn-primary oe_read_only" attrs="{'invisible': [('status_type', '!=', 'stage')]}" />
                     <button name="cancel" string="CANCEL" type="object" class="btn-danger oe_read_only"
                         attrs="{'invisible': [('status_type', '=', 'cancelled')]}" />
-
                     <button name="force_back" string="FORCE BACK STATUS" type="object"
                         class="btn-warning oe_read_only" />
                     <button name="force_next" string="FORCE NEXT STATUS" type="object"
@@ -88,6 +87,7 @@
                         </group>
                         <group colspan="1">
                             <field name="gender" />
+                            <field name="status_type"/>
                         </group>
                     </group>
                     <notebook>
@@ -98,10 +98,7 @@
                         </page>
                         <page string="Contact">
                             <group>
-                                <label for="email" class="oe_inline" />
-                                <div class="o_row o_row_readonly">
-                                    <field name="email" string="Email" widget="email" />
-                                </div>
+                                <field name="email" string="Email" widget="email" /> 
                                 <field name="phone" widget="phone" />
                             </group>
                         </page>
@@ -152,7 +149,7 @@
                             <field name="fold" />
                         </group>
                         <group colspan="1">
-                            <field name="type" widget="radio" />
+                            <field name="type_id" widget="radio" />
                         </group>
                     </group>
                     <notebook>

@@ -1,12 +1,21 @@
-function disableElementsInForm(event) {
-	event.preventDefault();
-//	$("[value='-1']").each(function() {
-//		$(this).prop("disabled", true);
-//	})
-	document.getElementById("info-form").submit();
-}
+(function(){
+	"use strict";
 
-$(function() {
-	document.getElementById("info-form").addEventListener("submit",
-			disableElementsInForm);
-});
+	function disableElementsInForm(event) {
+		event.preventDefault();
+		document.getElementById("info-form").submit();
+	}
+
+	function ready(fn) {
+		if (document.readyState != 'loading'){
+			fn();
+		} else {
+			document.addEventListener('DOMContentLoaded', fn);
+		}
+	}
+
+	ready(function() {
+		document.getElementById("info-form").addEventListener("submit",
+				disableElementsInForm);
+	});
+})();

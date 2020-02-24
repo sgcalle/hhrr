@@ -94,7 +94,7 @@
     
     <!-- Website Tab -->
     <record id="website_menu_adm_inquiry" model="website.menu">
-        <field name="name">University Inquiry</field>
+        <field name="name">Inquiry</field>
         <field name="url">/admission/inquiry</field>
         <field name="parent_id" ref="website.main_menu" />
         <field name="sequence" type="int">40</field>

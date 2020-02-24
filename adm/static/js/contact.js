@@ -79,11 +79,39 @@
 		
 	}
 	
-	$(document).ready(function() {
-		$(".add-contact").on("click", addContact);
-		$(".remove-contact").on("click", removeContact);
-		$("select.country").on("change", changeState);
-		$("select.country").trigger("change");
+	function ready(fn) {
+		if (document.readyState != 'loading'){
+			fn();
+		} else {
+			document.addEventListener('DOMContentLoaded', fn);
+		}
+	}
+
+	function nodeIterate(nodeList, functionCallback) {
+		var i = nodeList.length;
+		while (i){
+			functionCallback(nodeList[--i]);
+		}
+	}
+
+	function addEvent(nodeList, event, fn){
+		nodeIterate(nodeList, function(element){
+			element.addEventListener(event, fn);
+		});
+	}
+
+	function triggerEvent(nodeList, eventName){
+		var event = document.createEvent('HTMLEvents');
+		event.initEvent(eventName, true, false);
+		nodeIterate(nodeList, function(element){
+			element.dispatchEvent(event);
+		})
+	}
+	ready(function() {
+		addEvent(document.querySelectorAll(".add-contact"), "click", addContact);
+		addEvent(document.querySelectorAll(".remove-contact"), "click", removeContact);
+		addEvent(document.querySelectorAll("select.country"), "change", changeState);
+		// triggerEvent(document.querySelectorAll("select.country"), "change");
 
 		document.getElementById("family_form").addEventListener("submit", disableCheckboxes);
 	});

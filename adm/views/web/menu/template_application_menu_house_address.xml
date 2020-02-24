@@ -71,7 +71,7 @@
                         </div>
                         <div class="row">
                             <section class="col-12 d-flex justify-content-center p-3">
-                                <button type="button" class="btn col-2 btn-danger remove-house_address">Remove</button>
+                                <button type="button" class="btn btn-danger remove-house_address">Remove</button>
                             </section>
                         </div>
                     </article>
@@ -167,7 +167,7 @@
                                             <div class="row">
                                                 <section class="col-12 d-flex justify-content-center p-3">
                                                     <button type="button"
-                                                        class="btn col-2 btn-danger remove-house_address"
+                                                        class="btn btn-danger remove-house_address"
                                                         t-att-data-id="house_id_index+1">Remove</button>
                                                 </section>
                                             </div>
@@ -176,7 +176,7 @@
                                     <button type="button"
                                         class="add-house_address btn btn-success d-block m-auto">Add Home Address</button>
                                 </div>
-                                <div class="row">
+                                <div class="row justify-content-center p-4">
                                     <button class="btn btn-primary">Submit changes</button>
                                 </div>
                             </section>

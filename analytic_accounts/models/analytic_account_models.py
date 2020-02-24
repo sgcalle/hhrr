@@ -35,31 +35,33 @@ class AnalyticAccounts(models.Model):
     sub_account = fields.Many2one("analytic_accounts.group.sub_account", string="Sub Account")
     item = fields.Many2one("analytic_accounts.group.item", string="Item")
 
-    country_rel_id = fields.Integer(string='Country Id', related='country_id.id')
-    state_rel_id = fields.Integer(string='State Id', related='state_id.id')
-    company_rel_id = fields.Integer(string='Company Id', related='company_id.id')
-    department_rel_id = fields.Integer(string='Department Id', related='department.id')
-    sub_department_rel_id = fields.Integer(string='Sub Department Id', related='sub_department.id')
-    type_rel_id = fields.Integer(string='Type Id', related='type.id')
-    group_rel_id = fields.Integer(string='Group Id', related='group.id')
-    account_rel_id = fields.Integer(string='Account Id', related='account.id')
-    sub_account_rel_id = fields.Integer(string='Sub Account Id', related='sub_account.id')
-    item_rel_id = fields.Integer(string='Item Id', related='item.id')
+    country_rel_id = fields.Integer(string='Country Id', related='country_id.id', readonly=False)
+    state_rel_id = fields.Integer(string='State Id', related='state_id.id', readonly=False)
+    company_rel_id = fields.Integer(string='Company Id', related='company_id.id', readonly=False)
+    department_rel_id = fields.Integer(string='Department Id', related='department.id', readonly=False)
+    sub_department_rel_id = fields.Integer(string='Sub Department Id', related='sub_department.id', readonly=False)
+    type_rel_id = fields.Integer(string='Type Id', related='type.id', readonly=False)
+    group_rel_id = fields.Integer(string='Group Id', related='group.id', readonly=False)
+    account_rel_id = fields.Integer(string='Account Id', related='account.id', readonly=False)
+    sub_account_rel_id = fields.Integer(string='Sub Account Id', related='sub_account.id', readonly=False)
+    item_rel_id = fields.Integer(string='Item Id', related='item.id', readonly=False)
     
-    country_rel_code = fields.Char(string='Country Code', related='country_id.code')
-    state_rel_code = fields.Char(string='State Code', related='state_id.code')
-    company_rel_code = fields.Char(string='Company Code', related='company_id.analytic_code')
-    department_rel_code = fields.Char(string='Department Code', related='department.code')
-    sub_department_rel_code = fields.Char(string='Sub Department Code', related='sub_department.code')
-    type_rel_code = fields.Char(string='Type Code', related='type.code')
-    group_rel_code = fields.Char(string='Group Code', related='group.code')
-    account_rel_code = fields.Char(string='Account Code', related='account.code')
-    sub_account_rel_code = fields.Char(string='Sub Account Code', related='sub_account.code')
-    item_rel_code = fields.Char(string='Item Code', related='item.code')
+    country_rel_code = fields.Char(string='Country Code', related='country_id.code', readonly=False)
+    state_rel_code = fields.Char(string='State Code', related='state_id.code', readonly=False)
+    company_rel_code = fields.Char(string='Company Code', related='company_id.analytic_code', readonly=False)
+    department_rel_code = fields.Char(string='Department Code', related='department.code', readonly=False)
+    sub_department_rel_code = fields.Char(string='Sub Department Code', related='sub_department.code', readonly=False)
+    type_rel_code = fields.Char(string='Type Code', related='type.code', readonly=False)
+    group_rel_code = fields.Char(string='Group Code', related='group.code', readonly=False)
+    account_rel_code = fields.Char(string='Account Code', related='account.code', readonly=False)
+    sub_account_rel_code = fields.Char(string='Sub Account Code', related='sub_account.code', readonly=False)
+    item_rel_code = fields.Char(string='Item Code', related='item.code', readonly=False)
     
-    
-    def test_multi(self):
-        print(self)
+    department_rel_name = fields.Char(string='Department Name', related='department.name', readonly=False)
+    sub_department_rel_name = fields.Char(string='Sub Department Name', related='sub_department.name', readonly=False)
+
+    def test_foo(self):
+        return "test"
 
     # Domains
     @api.onchange("department")
@@ -213,19 +215,19 @@ class AnalyticAccounts(models.Model):
             CompanyEnv = self.env["res.company"]
             company_id = CompanyEnv.search([("analytic_code", "=", company_code)])
             if not company_id:
-                raise exceptions.ValidationError(_("Cosas de la vida ¯\_(ツ)_/¯: (Invalid company code)"))
+                raise exceptions.ValidationError(_("Invalid company code"))
             company_record = CompanyEnv.browse([company_id])
             
             if True:
                 pass
-                # raise exceptions.ValidationError(_("Cosas de la vida ¯\_(ツ)_/¯: (test)"))
+                # raise exceptions.ValidationError(_(" (test)"))
             
             if company_record.ids[0].country_id:
                 if company_record.ids[0].country_id.code == country_code:
-                    raise exceptions.ValidationError(_("Cosas de la vida ¯\_(ツ)_/¯: (Invalid country code)"))
+                    raise exceptions.ValidationError(_("Invalid country code"))
                 if company_record.ids[0].state_id:
                     if company_record.ids[0].state_id.code == region_code:
-                        raise exceptions.ValidationError(_("Cosas de la vida ¯\_(ツ)_/¯: (Invalid region/state code)"))
+                        raise exceptions.ValidationError(_("Cosas de la vida Â¯\_(ãƒ„)_/Â¯: (Invalid region/state code)"))
                 else:
                     raise exceptions.ValidationError(_("Country needs state specified"))
             else:
@@ -353,89 +355,93 @@ class AnalyticAccounts(models.Model):
                     })
                 values["item"] = new_item.id
         else:
-            raise exceptions.ValidationError(_("Cosas de la vida ¯\_(ツ)_/¯"))
+            raise exceptions.ValidationError(_("Cosas de la vida ¯\_()_/¯"))
         pass
 
-    @api.model
-    def create(self, values):
-        # self.ensure_one()
-        if "group_id" in values:
-            self.make_or_change(values)
-        else:
-            self._import(values)
-        # Create a group based on department and sub department
+
+    def change_groups(self, values):
         
-        dept_group_id = None
-        
-        if "department" in values and values["department"]:
-            AnalyticGroup = self.env["account.analytic.group"]
+        department = values["department"] if "department" in values else self.department_rel_id
+        AnalyticGroupEnv = self.env["account.analytic.group"]
+
+        department_group_id = False
+        if department:
             
             Deparments = self.env["analytic_accounts.group.department"]
-            dept_record = Deparments.browse([values["department"]])
+            department = Deparments.browse(department)
             
-            ExistingDeptGroup = AnalyticGroup.search([["name", "=", dept_record.name]])
+            ExistingDeptGroup = AnalyticGroupEnv.search(("&", ["parent_id", "=", False],["analytic_code", "=", department.code]))
             
             if not ExistingDeptGroup:
                 print("DeptGroupBefore: {}".format(ExistingDeptGroup))
                 
-                print("Departament: {}".format(dept_record.name))
+                print("Departament: {}".format(department.name))
                 
                 
                 dept_dict_obj = {
-                    "name": dept_record.name,
-                    "description": "Code: {}".format(dept_record.code)
+                    "name": department.name,
+                    "analytic_code": department.code,
+                    "description": "Code: {}".format(department.code)
                 }
                 
-                dept_group_id = AnalyticGroup.create(dept_dict_obj).id
-                
+                department_group_id = AnalyticGroupEnv.create(dept_dict_obj).id
             else:
-                dept_group_id = ExistingDeptGroup.id
+                ExistingDeptGroup.write({
+                    "name": department.name,
+                    "analytic_code": department.code
+                })
+                department_group_id = ExistingDeptGroup.id
             
-            
-        values["group_id"] = dept_group_id
-        if "sub_department" in values and values["sub_department"]:
-            
-            SubDeparments = self.env["analytic_accounts.group.sub_department"]
-            sub_dept_record = SubDeparments.browse([values["sub_department"]])
-            
-            ExistingSubDeptGroup = AnalyticGroup.search([["name", "=", sub_dept_record.name]])
+        # department_group_id = department_group_id if department_group_id else department.id     
+        values["group_id"] = department_group_id 
+        SubDeparments = self.env["analytic_accounts.group.sub_department"]
+
+        sub_department = values["sub_department"] if "sub_department" in values else self.sub_department_rel_id
+
+        if sub_department:
+            sub_department = SubDeparments.browse(sub_department)
+            ExistingSubDeptGroup = AnalyticGroupEnv.search(("&", ["parent_id.analytic_code", "=", department.code], ["analytic_code", "=", sub_department.code ]))
             
             if not ExistingSubDeptGroup:
             
-                print("Sub departament: {}".format(sub_dept_record.name))
+                print("Sub departament: {}".format(sub_department.name))
                 sub_dept_dict_obj = {
-                    "name": sub_dept_record.name,
-                    "parent_id": dept_group_id,
-                    "description": "Code: {}".format(sub_dept_record.code)
+                    "name": sub_department.name,
+                    "parent_id": department_group_id,
+                    "analytic_code": sub_department.code,
+                    "description": "Code: {}".format(sub_department.code)
                 }
                 
-                values["group_id"] = AnalyticGroup.create(sub_dept_dict_obj).id
+                sub_dept = AnalyticGroupEnv.create(sub_dept_dict_obj)
+                values["group_id"] = sub_dept.id
             else:
+                ExistingSubDeptGroup.write({
+                    "name": sub_department.name,
+                    "analytic_code": sub_department.code
+                })
                 values["group_id"] = ExistingSubDeptGroup.id
-            
-        return super(AnalyticAccounts, self).create(values)
 
     def reload_dept_code(self, values):
         if "department_rel_code" in values:
-            dept_record = None
+            department = None
             if "department" in values:
-                dept_record = self.env["analytic_accounts.group.department"].browse([values["department"]])
+                department = self.env["analytic_accounts.group.department"].browse([values["department"]])
             elif self.department:
-                dept_record = self.department
+                department = self.department
             else:
                 return
-            dept_record.code = values["department_rel_code"]
+            department.code = values["department_rel_code"]
 
     def reload_sub_dept_code(self, values):
         if "sub_department_rel_code" in values:
-            sub_dept_record = None
+            sub_department = None
             if "sub_department" in values:
-                sub_dept_record = self.env["analytic_accounts.group.sub_department"].browse([values["sub_department"]])
+                sub_department = self.env["analytic_accounts.group.sub_department"].browse([values["sub_department"]])
             elif self.sub_department:
-                sub_dept_record = self.sub_department
+                sub_department = self.sub_department
             else:
                 return
-            sub_dept_record.code = values["sub_department_rel_code"]
+            sub_department.code = values["sub_department_rel_code"]
 
 
     def reload_type_code(self, values):
@@ -493,7 +499,20 @@ class AnalyticAccounts(models.Model):
                 return
             item_record.code = values["item_rel_code"]
 
-    
+    @api.model
+    def create(self, values):
+        # self.ensure_one()
+        if "group_id" in values:
+            self.make_or_change(values)
+        else:
+            self._import(values)
+
+        # Create a group based on department and sub department
+        
+        self.change_groups(values)
+            
+        return super(AnalyticAccounts, self).create(values)
+
     def write(self, values):
         self.ensure_one()
         
@@ -507,6 +526,7 @@ class AnalyticAccounts(models.Model):
         self.reload_item_code(values)
         
         self.make_or_change(values)
+        self.change_groups(values)
         
         return super().write(values)
 
@@ -517,19 +537,6 @@ class GroupBase(models.Model):
     name = fields.Char(string="Name", required=True)
     code = fields.Char(string="Code", required=True, size=4)
     
-#===============================================================================
-#     # constraint
-#     @api.constrains('code')
-#     @api.one
-#     def _check_number(self):
-#         code = self.code
-# 
-#         code_converted = abs(code) if isinstance(code, int) else code
-# 
-#         if code and len(str(code_converted)) > 4:
-#             raise exceptions.ValidationError(_('Number of digits must on exceed 4'))
-#===============================================================================
-        
     @api.model
     def create(self, values):
         
@@ -540,9 +547,7 @@ class GroupBase(models.Model):
     
     
     def write(self, values):
-        
-        print("Creando un grupo generico")
-        
+        # print("Creando un grupo generico")
         if "code" in values:
             values["code"] = cojo_padding_4_right(values["code"])
                     
@@ -552,15 +557,31 @@ class GroupBase(models.Model):
 class GroupDepartment(GroupBase):
     _name = "analytic_accounts.group.department"
 
+    # group_id = fields.Many2one("account.analytic.group", string="Group")
+
+    # def write(self, values):
+    #     if "name" in values:
+    #         group_id.write({
+    #             "name": values["name"]
+    #         })
+    #     return super().write(values)
 
 class GroupSubDepartment(GroupBase):
     _name = "analytic_accounts.group.sub_department"
 
+    #group_id = fields.Many2one("account.analytic.group", string="Group")
+
+    #def write(self, values):
+    #    if "name" in values:
+    #        group_id.write({
+    #            "name": values["name"]
+    #        })
+    #    return super().write(values)
 
 class GroupType(GroupBase):
     _name = "analytic_accounts.group.type"
     
-    # sub_department_id = fields.Many2one("analytic_accounts.group.sub_department", required=True)
+    # sub_department.id = fields.Many2one("analytic_accounts.group.sub_department", required=True)
     group_ids = fields.One2many("analytic_accounts.group", "type_id", ondelete="cascade")
     group_none = fields.Many2one("analytic_accounts.group")
     

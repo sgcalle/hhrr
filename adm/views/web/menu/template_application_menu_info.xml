@@ -137,14 +137,15 @@
                                         <span class="text-danger"> *</span>
                                     </label>
                                     <select class="form-control" name="gender">
-
-                                        <option t-if="application.gender == 'm'" value="m" selected="selected">Male</option>
-                                        <option t-else="" value="m">Male</option>
-
-                                        <option t-if="application.gender == 'f'" value="f" selected="selected">Female
-                                        </option>
-                                        <option t-else="" value="f">Female</option>
-
+                                        <t t-foreach="genders.ids" t-as="gender_id">
+                                            <option t-if="application.gender == gender_id"
+                                                selected="selected" t-att-value="gender_id.id">
+                                                <t t-esc="gender_id.name" />
+                                            </option>
+                                            <option t-else="" t-att-value="gender_id.id">
+                                                <t t-esc="gender_id.name" />
+                                            </option>
+                                        </t>
                                     </select>
                                 </section>
 
@@ -204,7 +205,7 @@
                                         </t>
                                     </select>
                                 </section>
-                                <button class="btn btn-success d-block ml-auto mr-auto mt-3 mb-3">Save changes</button>
+                                <button class="btn btn-primary d-block ml-auto mr-auto mt-3 mb-3">Submit changes</button>
                             </div>
                         </form>
                     </main>

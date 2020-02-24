@@ -3,6 +3,11 @@
 from odoo import models, fields, api, exceptions, _
 from ..utils import formatting
 
+status_types = [
+        ("done", "Done"),
+        ("stage", "Stage"),
+        ("cancelled", "Cancelled")
+]
 
 class ApplicationStatus(models.Model):
     _name = "adm.application.status"
@@ -12,13 +17,7 @@ class ApplicationStatus(models.Model):
     description = fields.Text(string="Description")
     sequence = fields.Integer(readonly=True, default=-1)
     fold = fields.Boolean(string="Fold")
-    type = fields.Selection((
-            ('stage', "Stage"),
-            ('fact_integration', "Facts Integration"),
-            ('cancelled', "Cancelled"),
-        ),
-        string="Type", default='stage'
-    )
+    type_id = fields.Selection(status_types , string="Type", default='stage')
     
     partner_id = fields.Many2one("res.partner", string="Customer")
     
@@ -31,6 +30,10 @@ class ApplicationStatus(models.Model):
         values['sequence'] = next_order
         return super().create(values)
 
+class Gender(models.Model):
+    _name = "adm.gender"
+
+    name = fields.Char("Gender")
 
 class Application(models.Model):
     _name = "adm.application"
@@ -54,7 +57,7 @@ class Application(models.Model):
     date_of_birth = fields.Date(string="Date of birth", related="partner_id.date_of_birth")
     birth_country = fields.Many2one("res.country", string="Birth Country")
     birth_city = fields.Char("Birth City")
-    gender = fields.Selection((('m', 'Male'), ('f', 'Female')), string="Gender")
+    gender = fields.Many2one("adm.gender", string="Gender")
     father_name = fields.Char("Father name")
     mother_name = fields.Char("Mother name")
     family_id = fields.Many2one(related="partner_id.parent_id", string="Family")
@@ -189,7 +192,7 @@ class Application(models.Model):
 
     state_tasks = fields.One2many(string="State task", related="status_id.task_ids")
 
-    status_type = fields.Selection(string="Status Type", related="status_id.type")
+    status_type = fields.Selection(string="Status Type", related="status_id.type_id")
     forcing = False
 
     family_id = fields.Many2one(string="Family", related="partner_id.parent_id")
@@ -247,9 +250,9 @@ class Application(models.Model):
         if index < len(status_ids_ordered):
             next_status = status_ids_ordered[index]
 
-            if self.status_id.type == 'done':
+            if self.status_id.type_id == 'done':
                 raise exceptions.except_orm(_('Application completed'), _('The Application is already done'))
-            elif self.status_id.type == 'cancelled':
+            elif self.status_id.type_id == 'cancelled':
                 raise exceptions.except_orm(_('Application cancelled'), _('The Application cancelled'))
             else:
                 self.status_id = next_status
@@ -257,7 +260,7 @@ class Application(models.Model):
     def cancel(self):
         status_ids_ordered = self.env['adm.application.status'].search([], order="sequence")
         for status in status_ids_ordered:
-            if status.type == 'cancelled':
+            if status.type_id == 'cancelled':
                 self.status_id = status
                 break
 

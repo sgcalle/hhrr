@@ -1,43 +1,76 @@
-var contador = -1;
+(function(){
+	"use strict";
+	var contador = -1;
 
-function addSchool() {
-	var schoolClonnable = document.getElementById("form-template").cloneNode(
-			true);
-	var schoolForms = document.getElementById("school_forms");
+	function addSchool() {
+		var schoolClonnable = document.getElementById("form-template").cloneNode(
+				true);
+		var schoolForms = document.getElementById("school_forms");
 
-	schoolForms.appendChild(schoolClonnable)
+		schoolForms.appendChild(schoolClonnable)
 
-	contador--;
-	$(schoolClonnable).attr("id", "previous_school_" + contador)
-	$(schoolClonnable).removeClass("d-none");
-	var removeButton = $(schoolClonnable).find("button")
-	$(removeButton).data("id", contador).on("click", removeSchool);
+		contador--;
+		$(schoolClonnable).attr("id", "previous_school_" + contador)
+		$(schoolClonnable).removeClass("d-none");
+		var removeButton = $(schoolClonnable).find("button")
+		$(removeButton).data("id", contador).on("click", removeSchool);
 
-	$(this).remove();
+		$(this).remove();
 
-	$("#school_forms").append("<button type='button' class='add-school btn btn-success d-block m-auto'>Add School</button>");
-	$(".add-school").on("click", addSchool);
-}
-
-function changeState() {
-	var select_state = $(this).parents("div.row").find("select.state")
-	select_state.children("option:gt(0)").hide();
-	select_state.children("option[data-country='" + $(this).val() + "']").show();
-
-	if (select_state.children("option:selected").is(":hidden")){
-		select_state.children("option:nth(0)").prop("selected", true);
+		$("#school_forms").append("<button type='button' class='add-school btn btn-success d-block m-auto'>Add School</button>");
+		$(".add-school").on("click", addSchool);
 	}
-}
 
-function removeSchool() {
-	id = $(this).data("id");
-	$("#previous_school_" + id).remove();
-	$(this).remove();
-}
+	function changeState() {
+		var select_state = $(this).parents("div.row").find("select.state")
+		select_state.children("option:gt(0)").hide();
+		select_state.children("option[data-country='" + $(this).val() + "']").show();
 
-$(document).ready(function() {
-	$(".add-school").on("click", addSchool);
-	$(".remove-school").on("click", removeSchool);
-	$("select.country").on("change", changeState);
-	$("select.country").trigger("change");
-});
+		if (select_state.children("option:selected").is(":hidden")){
+			select_state.children("option:nth(0)").prop("selected", true);
+		}
+	}
+
+	function removeSchool() {
+		var id = $(this).data("id");
+		$("#previous_school_" + id).remove();
+		$(this).remove();
+	}
+
+	function ready(fn) {
+		if (document.readyState != 'loading'){
+			fn();
+		} else {
+			document.addEventListener('DOMContentLoaded', fn);
+		}
+	}
+
+	function nodeIterate(nodeList, functionCallback) {
+		var i = nodeList.length;
+		while (i){
+			functionCallback(nodeList[--i]);
+		}
+	}
+
+	function addEvent(nodeList, event, fn){
+		nodeIterate(nodeList, function(element){
+			element.addEventListener(event, fn);
+		});
+	}
+
+	function triggerEvent(nodeList, eventName){
+		var event = document.createEvent('HTMLEvents');
+		event.initEvent(eventName, true, false);
+		nodeIterate(nodeList, function(element){
+			element.dispatchEvent(event);
+		})
+	}
+
+	ready(function() {
+		addEvent(document.querySelectorAll(".add-school"), "click", addSchool);
+		addEvent(document.querySelectorAll(".remove-school"), "click", removeSchool);
+		addEvent(document.querySelectorAll("select.country"), "change", changeState);
+
+		// triggerEvent(document.querySelectorAll("select.country"), "change");
+	});
+})();

@@ -90,7 +90,7 @@
                         </div>
                         <div class="row">
                             <section class="col-12 d-flex justify-content-center p-3">
-                                <button type="button" class="btn col-2 btn-danger remove-school">Remove</button>
+                                <button type="button" class="btn btn-danger remove-school">Remove</button>
                             </section>
                         </div>
                     </article>
@@ -218,7 +218,7 @@
                                             <div class="row">
                                                 <section class="col-12 d-flex justify-content-center p-3">
                                                     <button type="button"
-                                                        class="btn col-2 btn-danger remove-school"
+                                                        class="btn btn-danger remove-school"
                                                         t-att-data-id="previous_school_index+1">Remove</button>
                                                 </section>
                                             </div>
@@ -226,15 +226,15 @@
                                     </t>
                                     <button type="button" class="add-school btn btn-success d-block m-auto">Add school</button>
                                 </div>
-                                <div class="row">
+                                <div class="row justify-content-center p-4">
                                     <button class="btn btn-primary">Submit changes</button>
                                 </div>
                             </section>
                         </form>
                     </main>
-                    <script type="text/javascript" src="/adm/static/js/previous_school.js"></script>
                 </div>
             </div>
         </t>
+        <script defer="defer" type="text/javascript" src="/adm/static/js/previous_school.js"></script>
     </template>
 </odoo>

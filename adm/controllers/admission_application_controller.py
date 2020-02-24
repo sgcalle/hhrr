@@ -165,7 +165,7 @@ class Admission(http.Controller):
                 'first_name': first_name,
                 'middle_name': middle_name,
                 'last_name': last_name,
-                'gender':  gender,
+                'gender':  self.env.ref('adm.gender_male').id,
                 'birthday': birthday,
                 'email': params["txtEmail"],
                 'school_year': school_year,
@@ -557,7 +557,8 @@ class Admission(http.Controller):
         many2one_fields = [name for name, value in field_types.items() if value == "many2one"]
         for key in result.keys():
             if key in many2one_fields:
-                if result[key] == "-1":
+                result[key] = int(result[key])
+                if result[key] == -1:
                     result[key] = False
                     pass    
         
@@ -586,8 +587,10 @@ class Admission(http.Controller):
         
         ApplicationEnv = http.request.env["adm.application"]
         CountryEnv = http.request.env['res.country']
+        GenderEnv = http.request.env['adm.gender']
         application = ApplicationEnv.browse([params["application_id"]])
         countries = CountryEnv.browse(CountryEnv.search([]))
+        genders = GenderEnv.browse(GenderEnv.search([]))
         
         LanguageEnv = http.request.env["adm.language"]
         languages = LanguageEnv.browse(LanguageEnv.search([])).ids
@@ -598,6 +601,7 @@ class Admission(http.Controller):
             "countries": countries.ids,
             "student": application.partner_id,
             "languages": languages,
+            "genders": genders,
         })
     
     @http.route("/admission/applications/<int:application_id>/previous-school", auth="public", methods=["GET"], website=True, csrf=False)

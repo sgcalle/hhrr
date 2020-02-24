@@ -91,7 +91,8 @@
 							<group string="Departments">
 								<group colspan="2">
 									<group colspan="1">
-										<field name="department" />
+										<field name="department" context="{'default_code': self.test_foo()}"/>
+										<field name="department_rel_name" readonly="0" invisible="1"/>
 									</group>
 									<group colspan="1">
 										<field name="department_rel_code" readonly="0" nolabel="1" />
@@ -100,6 +101,7 @@
 								<group colspan="2">
 									<group colspan="1">
 										<field name="sub_department" attrs="{'readonly':[('department', '=', False)]}" />
+										<field name="sub_department_rel_name" readonly="0" invisible="1"/>
 									</group>
 									<group colspan="1">
 										<field name="sub_department_rel_code" readonly="0" nolabel="1" />

@@ -18,3 +18,5 @@ adm_house_address_access,adm.adm_house_address_access,adm.model_adm_house_addres
 adm_medical_allergy_access,adm.adm_medical_allergy_access,adm.model_adm_medical_allergy,,1,1,1,1
 adm_medical_condition_access,adm.adm_medical_condition_access,adm.model_adm_medical_condition,,1,1,1,1
 adm_medical_medication_access,adm.adm_medical_medication_access,adm.model_adm_medical_medication,,1,1,1,1
+adm_gender_access,adm.adm_gender_access,adm.model_adm_gender,,1,0,0,0
+adm_inquiry_status_type_access,adm.adm_inquiry_status_type_access,adm.model_adm_inquiry_status_type,,1,0,0,0

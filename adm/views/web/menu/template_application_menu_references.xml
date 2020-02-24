@@ -72,7 +72,7 @@
                                             t-att-value="application.personal_reference_name_2" />
                                     </div>
                                 </section>
-                                <button class="btn btn-success d-block ml-auto mr-auto mt-3 mb-3">Save changes</button>
+                                <button class="btn btn-primary d-block ml-auto mr-auto mt-3 mb-3">Save changes</button>
                             </div>
                         </form>
                     </main>

@@ -109,7 +109,7 @@
                         </div>
                         <div class="row">
                             <section class="col-12 d-flex justify-content-center p-3">
-                                <button type="button" class="btn col-2 btn-danger remove-contact">Remove</button>
+                                <button type="button" class="btn btn-danger remove-contact">Remove</button>
                             </section>
                         </div>
 
@@ -204,7 +204,7 @@
 
                                                 <div class="row">
                                                     <section class="col-12 d-flex justify-content-center p-3">
-                                                        <button type="button" class="btn col-2 btn-danger remove-contact" t-att-data-id="relationship_index+1">Remove</button>
+                                                        <button type="button" class="btn btn-danger remove-contact" t-att-data-id="relationship_index+1">Remove</button>
                                                     </section>
                                                 </div>
                                             </article>
@@ -212,7 +212,7 @@
                                         <button type="button" class="add-contact btn btn-success d-block m-auto">Add family member</button>
                                     </div>
                                 </div>
-                                <button class="btn btn-success d-block ml-auto mr-auto mt-3 mb-3">Submit changes</button>
+                                <button class="btn btn-primary d-block ml-auto mr-auto mt-3 mb-3">Submit changes</button>
                             </section>
                         </form>
                     </main>

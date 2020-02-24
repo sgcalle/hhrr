@@ -79,18 +79,47 @@
 		$(this).remove();
 	}
 
-	$(document).ready(function () {
-		$(".add-medical_condition").on("click", addMedicalCondition);
-		$(".remove-medical_condition").on("click", removeMedicalCondition);
+	function ready(fn) {
+		if (document.readyState != 'loading'){
+			fn();
+		} else {
+			document.addEventListener('DOMContentLoaded', fn);
+		}
+	}
 
-		$(".add-medical_allergy").on("click", addMedicalAllergy);
-		$(".remove-medical_allergy").on("click", removeMedicalAllergy);
+	function nodeIterate(nodeList, functionCallback) {
+		var i = nodeList.length;
+		while (i){
+			functionCallback(nodeList[--i]);
+		}
+	}
 
-		$(".add-medical_medication").on("click", addMedicalMedication);
-		$(".remove-medical_medication").on("click", removeMedicalMedication);
+	function addEvent(nodeList, event, fn){
+		nodeIterate(nodeList, function(element){
+			element.addEventListener(event, fn);
+		});
+	}
 
-		$("select.country").on("change", changeState);
-		$("select.country").trigger("change");
+	function triggerEvent(nodeList, eventName){
+		var event = document.createEvent('HTMLEvents');
+		event.initEvent(eventName, true, false);
+		nodeIterate(nodeList, function(element){
+			element.dispatchEvent(event);
+		})
+	}
+
+	ready(function () {
+		addEvent(document.querySelectorAll(".add-medical_condition"), "click", addMedicalCondition);
+	 	addEvent(document.querySelectorAll(".remove-medical_condition"), "click", removeMedicalCondition);
+ 
+		addEvent(document.querySelectorAll(".add-medical_allergy"), "click", addMedicalAllergy);
+		addEvent(document.querySelectorAll(".remove-medical_allergy"), "click", removeMedicalAllergy);
+
+		addEvent(document.querySelectorAll(".add-medical_medication"), "click", addMedicalMedication);
+		addEvent(document.querySelectorAll(".remove-medical_medication"), "click", removeMedicalMedication);
+
+		addEvent(document.querySelectorAll("select.country"), "change", changeState);
+		triggerEvent(document.querySelectorAll("select.country"), "change");
 	});
 }
 )();

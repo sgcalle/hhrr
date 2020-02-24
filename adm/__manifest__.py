@@ -32,6 +32,8 @@
         'data/statics_data.xml',
         'data/email_template_data.xml',
         'data/language_types.xml',
+        'data/status_type_data.xml',
+        'data/gender_data.xml',
         
         'views/web/template_application_list.xml',
         'views/web/template_inquiry_form.xml',

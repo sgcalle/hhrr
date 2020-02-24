@@ -3,6 +3,17 @@
 from odoo import models, fields, api, exceptions, _
 from ..utils import formatting
 
+status_types = [
+        ("done", "Done"),
+        ("stage", "Stage"),
+        ("cancelled", "Cancelled")
+]
+    
+
+class StatusType(models.Model):
+    _name = "adm.inquiry.status.type"
+
+    name = fields.Char(string="Status Name")
 
 class Status(models.Model):
     _name = "adm.inquiry.status"
@@ -12,18 +23,12 @@ class Status(models.Model):
     description = fields.Text(string="Description")
     sequence = fields.Integer(readonly=True, default=-1)
     fold = fields.Boolean(string="Fold")
-    type = fields.Selection((('stage', "Stage"),
-                             ('done', "Done"),
-                             ('cancelled', 'Cancelled')),
-                            string="Type", default='stage')
+    # type_id = fields.Many2one("adm.inquiry.status.type",string="Type", required=True)
+    # type_name = fields.Char(related="type_id.name", string="Type Name")
+
+    type_id = fields.Selection(selection=status_types, string="Type")
+
     task_ids = fields.One2many("adm.inquiry.task", "status_id", "Status Ids")
-
-    @api.model
-    def create(self, values):
-        next_order = self.env['ir.sequence'].next_by_code('sequence.inquiry.task')
-
-        values['sequence'] = next_order
-        return super(Status, self).create(values)
 
 
 class Inquiry(models.Model):
@@ -35,8 +40,13 @@ class Inquiry(models.Model):
     def _read_group_status_ids(self, stages, domain, order):
         status_ids = self.env['adm.inquiry.status'].search([])
         return status_ids
-    
+
     # Admission Information
+
+    school_year_id = fields.Many2one("school_base.school_year", string="School Year")
+    grade_level_id = fields.Many2one("school_base.grade_level", string="Grade Level")
+    responsible_id = fields.Many2one("res.partner", string="Responsible")
+
     preferred_degree_program = fields.Many2one("adm.degree_program",
                                                string="Preferred Degree Program")
     
@@ -46,11 +56,11 @@ class Inquiry(models.Model):
     middle_name = fields.Char(string="Middle Name", default="")
     last_name = fields.Char(string="Last Name", default="")
     date_of_birth = fields.Date(string="Date of birth")
-    gender = fields.Selection((('m', 'Male'), ('f', 'Female')), string="Gender")
+    gender = fields.Many2one("adm.gender", string="Gender")
 
     # Contact
-    email = fields.Char(string="Email", related="partner_id.email", index=True)
-    phone = fields.Char(string="Phone", related="partner_id.phone")
+    email = fields.Char(string="Email", related="partner_id.email", readonly=False)
+    phone = fields.Char(string="Phone", related="partner_id.phone", readonly=False)
     
     # School
     current_school = fields.Char(string="Current School")
@@ -61,22 +71,27 @@ class Inquiry(models.Model):
                                     string="language")
     
     # Location
-    country_id = fields.Many2one("res.country", related="partner_id.country_id", string="Country")
-    state_id = fields.Many2one("res.country.state", related="partner_id.state_id", string="State")
-    city = fields.Char(string="City", related="partner_id.city")
-    street = fields.Char(string="Street Address", related="partner_id.street")
-    zip = fields.Char("zip", related="partner_id.zip")
-    
+    country_id = fields.Many2one("res.country", related="partner_id.country_id",
+                                  readonly=False, string="Country")
+    state_id = fields.Many2one("res.country.state", readonly=False,
+                                related="partner_id.state_id", string="State")
+    city = fields.Char(string="City", readonly=False, related="partner_id.city")
+    street = fields.Char(string="Street Address", readonly=False, related="partner_id.street")
+    zip = fields.Char("zip", readonly=False, related="partner_id.zip")
+
     partner_id = fields.Many2one("res.partner", string="Contact")
-    status_id = fields.Many2one("adm.inquiry.status",
-                                string="Status", group_expand="_read_group_status_ids")
+    status_id = fields.Many2one("adm.inquiry.status", string="Status", 
+                                group_expand="_read_group_status_ids")
     task_ids = fields.Many2many("adm.inquiry.task")
 
     state_tasks = fields.One2many(string="State task", related="status_id.task_ids")
 
-    status_type = fields.Selection(string="Status Type", related="status_id.type")
+    # status_type = fields.Char(string="Status Type", related="status_id.name")
+    status_type = fields.Selection(string="Status Type", related="status_id.type_id")
 
     application_id = fields.Many2one("adm.application")
+    
+
     forcing = False
     
     
@@ -130,9 +145,9 @@ class Inquiry(models.Model):
         if index < len(status_ids_ordered):
             next_status = status_ids_ordered[index]
 
-            if self.status_id.type == 'done':
+            if self.status_id.type_id == 'done':
                 raise exceptions.except_orm(_('Inquiry completed'), _('The Inquiry is already done'))
-            elif self.status_id.type == 'cancelled':
+            elif self.status_id.type_id == 'cancelled':
                 raise exceptions.except_orm(_('Inquiry cancelled'), _('The Inquiry cancelled'))
             else:
                 self.status_id = next_status
@@ -140,7 +155,7 @@ class Inquiry(models.Model):
     def cancel(self):
         status_ids_ordered = self.env['adm.inquiry.status'].search([], order="sequence")
         for status in status_ids_ordered:
-            if status.type == 'cancelled':
+            if status.type_id == 'cancelled':
                 self.status_id = status
                 break
 
@@ -159,20 +174,22 @@ class Inquiry(models.Model):
         first_status = self.env['adm.inquiry.status'].search([], order="sequence")[0]
         values['status_id'] = first_status.id
         values['name'] = formatting.format_name(values['first_name'], values['middle_name'], values['last_name']) 
-        
+
+        parter = False
+
+        if not "partner_id" in values or not values["partner_id"]:
+            partner = self.create_new_partner(values)
+            values["partner_id"] = partner.id
+        else:
+            partner = self.env["res.partner"].browse(values["partner_id"])
         inquiry = super().create(values)
         
-        if not inquiry.partner_id:
-            partner = self.create_new_partner(values)
-            partner.uni_inquiry_id = inquiry.id
-            
-            inquiry.partner_id = partner.id
-        
+        partner.uni_inquiry_id = inquiry.id
         return inquiry
 
     def create_new_partner(self, values):
         PartnerEnv = self.env["res.partner"]
-          
+
         partner = PartnerEnv.create({
             "name": values["name"],
             "email": values["email"],
@@ -218,7 +235,7 @@ class Inquiry(models.Model):
             "middle_name": self.middle_name,
             "last_name": self.last_name,
             "date_of_birth": self.date_of_birth,
-            "gender": self.gender,
+            "gender": self.gender.id,
             
             "current_school": self.current_school,
             "current_school_address": self.current_school_address,
@@ -250,9 +267,9 @@ class Inquiry(models.Model):
         
         if not user:
             user = UsersEnv.create({
-                "name": self.name,
+                "name": parent_id.name,
                 "partner_id": parent_id.id,
-                "login": self.email,
+                "login": parent_id.email,
                 "sel_groups_1_9_10": 9,
             })
         else:
@@ -293,7 +310,7 @@ class Inquiry(models.Model):
         
         if "status_id" in values:
             next_status = StatusEnv.browse([values["status_id"]])
-            if (next_status.type == "done" and 
+            if (next_status.type_id == "done" and 
                 not self.application_id):
                 self.create_new_application()
         

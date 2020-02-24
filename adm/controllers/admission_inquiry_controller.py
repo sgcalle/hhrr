@@ -22,6 +22,7 @@ class Admission(http.Controller):
     @http.route("/admission/inquiry", auth="public", methods=["GET"], website=True)
     def admission_web(self, **params):
         countries = http.request.env['res.country']
+        states = http.request.env['res.country.state']
         contact_times = http.request.env['adm.contact_time']
         degree_programs = http.request.env['adm.degree_program']
 
@@ -33,6 +34,7 @@ class Admission(http.Controller):
             'grade_levels': grade_level.search([]),
             'school_years': school_year.search([]),
             'countries': countries.search([]),
+            'states': states.search([]),
             'contact_times': contact_times.search([]),
             'degree_programs': degree_programs.search([]),
         })
@@ -53,13 +55,14 @@ class Admission(http.Controller):
         last_name = params["txtLastName"]
         street = params["txtStreetAddress"]
         # street2 = params["txtStreetAddress2"]
-        country_id = params["selCountry"]
-        state = params["selState"]
+        country_id = int(params["selCountry"])
+        state = int(params["selState"]) if params["selState"] else False
         zip = params["txtZip"]
         
         mobile = params["txtCellPhone"]
         phone = params["txtHomePhone"]
         email = params["txtEmail"]
+        city = params["txtCity"]
         
         family_id = PartnerEnv.sudo().create({
             "name": "{} family".format(last_name),
@@ -70,6 +73,7 @@ class Admission(http.Controller):
             "country_id": country_id,
             "state_id": state,
             "zip": zip,
+            "city": city,
             
             'mobile': mobile,
             'phone': phone,
@@ -77,7 +81,7 @@ class Admission(http.Controller):
         })
         
         parent_id = PartnerEnv.sudo().create({
-            "name": last_name,
+            "name": full_name,
             
             "parent_id": family_id.id,
             "function": "parent",
@@ -86,6 +90,7 @@ class Admission(http.Controller):
             "country_id": country_id,
             "state_id": state,
             "zip": zip,
+            "city": city,
             
             'mobile': mobile,
             'phone': phone,
@@ -95,13 +100,13 @@ class Admission(http.Controller):
         # Create students
         id_students = list()
         students_total = int(params["studentsCount"])
- 
+
         first_name_list = post_parameters().getlist("txtStudentFirstName")
         last_name_list = post_parameters().getlist("txtStudentLastName")
         middle_name_list = post_parameters().getlist("txtStudentMiddleName")
         birthday_list = post_parameters().getlist("txtStudentBirthday")
-        grade_level_list = post_parameters().getlist("selStudentGradeLevel")
-        school_year_list = post_parameters().getlist("selStudentSchoolYear")
+        grade_level_list = list(map(int, post_parameters().getlist("selStudentGradeLevel")))
+        school_year_list = list(map(int, post_parameters().getlist("selStudentSchoolYear")))
         current_school_list = post_parameters().getlist("txtStudentCurrentSchool")
         gender_list = post_parameters().getlist("selStudentGender")
  
@@ -130,6 +135,7 @@ class Admission(http.Controller):
                 "country_id": country_id,
                 "state_id": state,
                 "zip": zip,
+                "city": city,
                 
                 'mobile': mobile,
                 'phone': phone,
@@ -142,32 +148,18 @@ class Admission(http.Controller):
                 'first_name': first_name,
                 'middle_name': middle_name,
                 'last_name': last_name,
-                'gender':  gender,
+                'gender': http.request.env.ref('adm.{}'.format(gender)).id,
 #                'birthday': birthday,
-#                'email': params["txtEmail"],
-                'school_year': school_year,
-                'grade_level': grade_level,
+                
+                'school_year_id': school_year,
+                'grade_level_id': grade_level,
                 'current_school': current_school,
 #                'current_school_address': current_school_address,
-                'responsible_id': family_id.id
+                'responsible_id': parent_id.id
             })
             
             id_student.inquiry_id = new_inquiry.id
             
- #======================================================================================================================
- #            id_student = PartnerEnv.sudo().create({
- #                'first_name': first_name,
- #                'middle_name': middle_name,
- #                'last_name': last_name,
- #                'gender':  gender,
- #                'birthday': birthday,
- #                'email': params["txtEmail"],
- #                'school_year': school_year,
- #                'grade_level': grade_level,
- #                'current_school': current_school,
- #                'responsible_id': family_id.id
- #            })
- #======================================================================================================================
             id_students.append(id_student)
             
         response = http.request.render('adm.template_inquiry_sent')

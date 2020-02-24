@@ -67,12 +67,33 @@ function getStates(){
 
 }
 
-$(function(){
-    $('#add-tab').on('click', addStudent);
-    $('#selCountry').on('change', getStates);
-    
-    $('.custom-file-input').on("change", function(){
-    	var fileName = $(this)[0].files[0].name;
-    	$(this).next("label").text(fileName);
-    });
+function changeState() {
+	var select_state = $('#selState')
+	select_state.children("option:gt(0)").hide();
+	select_state.children("option[data-country='" + $(this).val() + "']").show();
+
+	if (select_state.children("option:selected").is(":hidden")){
+		select_state.children("option:nth(0)").prop("selected", true);
+	}
+}
+
+function ready(fn) {
+    if (document.readyState != 'loading'){
+        fn();
+    } else {
+        document.addEventListener('DOMContentLoaded', fn);
+    }
+}
+
+ready(function(){
+
+    document.querySelector("#add-tab").addEventListener("click", addStudent)
+    document.querySelector("#selCountry").addEventListener("change", changeState)
+
+    document.querySelectorAll(".custom-file-input").forEach(function(element){
+        element.addEventListener("change", function(){
+            var fileName = this.files[0].name
+            $(this).next("label").text(fileName);
+        })
+    })
 });
