@@ -20,7 +20,8 @@
 
 		$("#school_forms").append("<button type='button' class='add-school btn btn-success d-block m-auto'>Add School</button>");
 		$(".add-school").on("click", addSchool);
-		$("select.country").on("change", changeState);
+		var countryElement = document.querySelectorAll("select.country");
+		triggerEvent(countryElement, "change")
 	}
 
 	function changeState() {
@@ -61,8 +62,7 @@
 	}
 
 	function triggerEvent(nodeList, eventName){
-		var event = document.createEvent('HTMLEvents');
-		event.initEvent(eventName, true, false);
+		var event = new Event(eventName, {"bubbles": true, "cancelable": false})
 		nodeIterate(nodeList, function(element){
 			element.dispatchEvent(event);
 		})
@@ -72,7 +72,8 @@
 		addEvent(document.querySelectorAll(".add-school"), "click", addSchool);
 		addEvent(document.querySelectorAll(".remove-school"), "click", removeSchool);
 		addEvent(document.querySelectorAll("select.country"), "change", changeState);
-
-		// triggerEvent(document.querySelectorAll("select.country"), "change");
+		
+		document.querySelector
+		triggerEvent(document.querySelectorAll("select.country"), "change");
 	});
 })();
