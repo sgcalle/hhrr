@@ -59,6 +59,7 @@
 		nodeIterate(nodeList, function(element){
 			element.addEventListener(event, fn);
 		});
+
 	}
 
 	function triggerEvent(nodeList, eventName){
