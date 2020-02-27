@@ -19,6 +19,7 @@
 
 		$("#school_forms").append("<button type='button' class='add-school btn btn-success d-block m-auto'>Add School</button>");
 		$(".add-school").on("click", addSchool);
+		$("select.country").on("change", changeState);
 	}
 
 	function changeState() {
