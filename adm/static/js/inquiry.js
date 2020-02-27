@@ -10,12 +10,12 @@ function removeStudent(idStudent){
 function addStudent(){
     studentCount++;
     var htmlTab =
-`<section class="nav-item" style="position: relative" id="navStudent${studentCount}">
-    <a class="nav-link" id="student${studentCount}-tab" data-toggle="tab" href="#student${studentCount}"
-       role="tab" aria-controls="student${studentCount}" aria-selected="false">Student ${studentCount}</a>
-       <i class="fa fa-times" style="position: absolute; top: -0.5em; right: 0.1em; font-size: 1.4em; color: orangered; cursor: pointer;"
-          onclick="removeStudent(${studentCount})"></i>
-</section>`;
+    `<li class="nav-item" style="position: relative" id="navStudent${studentCount}">
+        <a class="nav-link" id="student${studentCount}-tab" data-toggle="tab" href="#student${studentCount}"
+            role="tab" aria-controls="student${studentCount}" aria-selected="false">Student ${studentCount}</a>
+            <i class="fa fa-times" style="position: absolute; top: -0.5em; right: 0.1em; font-size: 1.4em; color: orangered; cursor: pointer;"
+            onclick="removeStudent(${studentCount})"></i>
+    </li>`;
 
 
     $(htmlTab).insertBefore($(this).parent());
