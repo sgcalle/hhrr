@@ -21,7 +21,8 @@
 		$("#school_forms").append("<button type='button' class='add-school btn btn-success d-block m-auto'>Add School</button>");
 		$(".add-school").on("click", addSchool);
 		var countryElement = document.querySelectorAll("select.country");
-		triggerEvent(countryElement, "change")
+		addEvent(countryElement, "change", changeState);
+		triggerEvent(countryElement, "change");
 	}
 
 	function changeState() {
