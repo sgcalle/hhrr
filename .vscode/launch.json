@@ -11,7 +11,7 @@
             "program": "C:\\odoo\\Odoo_13e\\server\\odoo-bin",
             "console": "integratedTerminal",
             "args": [
-                "--update=honduras_invoices",
+                "--update=school_base",
             ],
         }
     ]
