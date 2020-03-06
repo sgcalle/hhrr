@@ -7,10 +7,11 @@
 				true);
 		var schoolForms = document.getElementById("school_forms");
 
-		schoolForms.appendChild(schoolClonnable)
+		schoolForms.appendChild(schoolClonnable);
 
 		contador--;
-		$(schoolClonnable).attr("id", "previous_school_" + contador)
+
+		schoolClonnable.id = "previous_school_" + contador;
 		$(schoolClonnable).removeClass("d-none");
 		var removeButton = $(schoolClonnable).find("button")
 		$(removeButton).data("id", contador).on("click", removeSchool);
@@ -26,13 +27,23 @@
 	}
 
 	function changeState() {
-		var select_state = $(this).parents("div.row").find("select.state")
-		select_state.children("option:gt(0)").hide();
+		var select_state = this.closest("div.row").querySelector("select.state");
+		var select_country = this;
+		var set_options = function(element){
+			if (element.dataset.country === element.value){
+				console.log("QUESO");	
+			}
+		};
+
+		select_state.querySelectorAll("option").forEach(set_options);
+		// nodeIterate(select_state.querySelectorAll("option"), set_options);
+
+		/* select_state.children("option:gt(0)").hide();
 		select_state.children("option[data-country='" + $(this).val() + "']").show();
 
-		if (select_state.children("option:selected").is(":hidden")){
+		if (select_state.ch:ildren("option:selected").is(":hidden")){
 			select_state.children("option:nth(0)").prop("selected", true);
-		}
+		} */
 	}
 
 	function removeSchool() {
