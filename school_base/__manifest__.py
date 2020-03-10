@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "school_base",
+    'name': "School Base",
 
     'summary': """
         Common models for eduwebgroup school modules as School Year, Grade Level, etc...""",
