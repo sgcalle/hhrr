@@ -523,13 +523,21 @@ class AnalyticAccounts(models.Model):
     @api.model
     def create(self, values):
         # self.ensure_one()
+        self.reload_dept_code(values)
+        self.reload_sub_dept_code(values)
+
+        self.reload_type_code(values)
+        self.reload_type_code(values)
+        self.reload_account_code(values)
+        self.reload_sub_account_code(values)
+        self.reload_item_code(values)
+
         if "group_id" in values:
             self.make_or_change(values)
         else:
             self._import(values)
 
         # Create a group based on department and sub department
-        
         self.change_groups(values)
             
         return super(AnalyticAccounts, self).create(values)
