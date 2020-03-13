@@ -199,6 +199,12 @@
                         <t t-set="amount_descuento" t-value="0"/>
                         
                         <t t-foreach="o.invoice_line_ids" t-as="invoice_line">
+                            <t t-if="invoice_line.discount != 0">
+                                <t t-set="amount_descuento" t-value="amount_descuento + ( 100 * invoice_line.price_total / ( 100 - invoice_line.discount)"/>
+                            </t>
+                            <t t-if="invoice_line.price_total &lt; 0">
+                                <t t-set="amout_descuento" t-value="amount_descuento - invoice_line.price_total" />
+                            </t>
                             <t t-if="invoice_line.tax_ids" >
                                 <t t-foreach="invoice_line.tax_ids" t-as="tax_id">
                                     <t t-if="tax_id.amount == 15">
