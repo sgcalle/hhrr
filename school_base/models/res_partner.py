@@ -32,6 +32,9 @@ class Contact(models.Model):
 
     is_family = fields.Boolean("Is a family?")
     
+    # For Families
+    financial_res_ids = fields.Many2many("res.partner", string="Financial responsability", relation="partner_financial_res", column1="partner_id", column2="partner_financial_id")
+
     def _compute_family_invoice_ids(self):
         for record in self:
             invoices = False

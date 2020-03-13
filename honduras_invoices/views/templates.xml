@@ -1,4 +1,40 @@
 <odoo>
+    <template id="honduras_invoices.invoice_payments_report"
+        model="account.move">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-set="lang" t-value="o.partner_id.lang"/>
+                <t t-call="web.external_layout">
+                    <t t-set="o" t-value="o.with_context(lang=lang)"/>
+                    <t t-set="payments_vals" t-value="o._get_reconciled_payments()"/>
+                    <div class="page">
+                        <div class="row mt64">
+                            <div class="col-6" t-if="o.invoice_date">
+                                <strong>Invoice Date: </strong> <span t-field="o.invoice_date"/>
+                            </div>
+                        </div>
+                        <table class="table table-sm">
+                            <tr>
+                                <th>Payment Date</th>
+                                <th>Payment Receipment</th>
+                                <th>Original Amounty</th>
+                                <th>Amount Paid</th>
+                            </tr>
+                            <t t-foreach="payments_vals" t-as="payment_id">
+                                <tr>
+                                    <td><span t-field="payment_id.payment_date"/></td>
+                                    <td><span t-field="payment_id.name"/></td>
+                                    <td class="text-right"><span t-field="o.amount_total"/></td>
+                                    <td class="text-right"><span t-esc="payment_id._get_invoice_payment_amount(o)" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td>
+                                </tr>
+                            </t>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
     <template id="honduras_invoices.invoice_report"
         inherit_id="account.report_invoice_document">
         <xpath expr="//t[@t-call='web.external_layout']" position="replace">
