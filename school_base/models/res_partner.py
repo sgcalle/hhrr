@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 
-from odoo import fields, models
+from odoo import fields, models, api, _
+from odoo.exceptions import AccessError, UserError, ValidationError
 
 selec_person_types = [
     ("student", "Student"),
@@ -36,6 +37,20 @@ class Contact(models.Model):
     # For Families
     financial_res_ids = fields.Many2many("res.partner", string="Financial responsability", relation="partner_financial_res", column1="partner_id", column2="partner_financial_id")
 
+    # Added 3/30/2020
+    first_name  = fields.Char("First Name")#, store=True, related="uni_application_id.first_name")
+    middle_name = fields.Char("Middle Name")#, store=True, related="uni_application_id.first_name")
+    last_name   = fields.Char("Last Name") #, store=True, related="uni_application_id.first_name")
+
+    # We need this field is readonly
+    name = fields.Char(index=True, compute="_compute_name", store=True)
+
+    @api.depends("first_name", "middle_name", "last_name")
+    def _compute_name(self):
+        for record in self:
+            record.name = formatting.format_name(record.first_name, record.middle_name, record.last_name)
+    
+
     def _compute_family_invoice_ids(self):
         for record in self:
             invoices = False
@@ -44,6 +59,30 @@ class Contact(models.Model):
             record.family_invoice_ids = invoices
 
                 
+    @api.model
+    def create(self, values):
+        PartnerEnv = self.env["res.partner"]
+
+        # Some constant for making more readeable the code
+        ACTION_TYPE = 0
+        TYPE_REPLACE = 6
+        TYPE_ADD_EXISTING = 4
+        TYPE_REMOVE_NO_DELETE = 3
+
+        partners = super().create(values)
+
+        ctx = self._context
+        for record in partners:
+            if "member_id" in ctx:
+                if ctx.get("member_id"):
+                    record.write({
+                        "member_ids": [[TYPE_ADD_EXISTING, ctx.get("member_id"), False]]
+                    })
+                else:
+                    raise UserError( _("Contact should be save before adding families"))
+
+        return partners 
+
     def write(self, values):
         PartnerEnv = self.env["res.partner"]
 

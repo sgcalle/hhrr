@@ -16,9 +16,5 @@ class FinacialResponsabilityPercent(models.Model):
     @api.onchange('family_id')
     def _get_family_domain(self):
         self.ensure_one()
-        self.family_id = False
         family_ids = self.partner_id.family_ids.ids
-        if family_ids:
-            return  {'domain':{'family_id':[('id', 'in', family_ids)]}}
-        else:
-            return  {'domain':{'product_id':[('id', 'in', [])]}}
+        return  {'domain':{'family_id':[('id', 'in', family_ids)]}}
