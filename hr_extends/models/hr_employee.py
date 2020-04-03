@@ -28,7 +28,7 @@ class EmployeeExtended(models.Model):
     hcr_date_of_expiration = fields.Date("Date of expiration")
 
     employee_job_status = fields.Selection(EMPLOYEE_JOB_STATUS, string="Employee job status")
-    employee_active_status = fields.Selection(EMPLOYEE_JOB_STATUS, string="Employee job status")
+    employee_active_status = fields.Selection(EMPLOYEE_ACTIVE_STATUS, string="Employee active status")
 
     employee_type_ids = fields.Many2many("hr_extends.employee.type", string="Employee Type")
 
