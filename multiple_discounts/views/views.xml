@@ -6,7 +6,8 @@
         <field name="inherit_id" ref="base.view_partner_form" />
         <field name="arch" type="xml">
             <group name="sale" position="inside">
-                <field name="discount_ids" widget="many2many_tags"/>
+                <label for="discount_ids" string="Discounts" />
+                <field name="discount_ids" widget="many2many_tags" nolabel="1"/>
             </group>
         </field>
     </record>
@@ -15,9 +16,12 @@
         <field name="name">Discount tree</field>
         <field name="model">multiple_discounts.discount</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree editable="bottom">
                 <field name="percent"/>
                 <field name="name"/>
+                <field name="category_id"/>
+                <field name="account_id"/>
+                <field name="analytic_account_id"/>
             </tree>
         </field>
     </record>
@@ -40,7 +44,7 @@
     </record>
 
     <menuitem id="menu_multiple_disconts"
-              parent="account.menu_finance_receivables"
+              parent="sale.menu_sale_config"
               action="multiple_discounts.discount_tree_action"
               name="Discounts"/>
 </odoo>

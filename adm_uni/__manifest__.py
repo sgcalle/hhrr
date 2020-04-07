@@ -35,10 +35,6 @@
         'views/web/template_inquiry_form.xml',
         'views/web/template_application_first_form.xml',
     ],
-    # only loaded in demonstration mode
-    'demo': [
-        'demo/demo.xml',
-    ],
     'application': True
 }
 

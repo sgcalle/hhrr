@@ -32,8 +32,4 @@
         "data/reports.xml",
         "data/data_menu.xml",
     ],
-    # only loaded in demonstration mode
-    'demo': [
-        'demo/demo.xml',
-    ],
 }

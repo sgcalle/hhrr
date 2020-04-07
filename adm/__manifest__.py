@@ -59,10 +59,6 @@
         'views/web/menu/template_application_menu_upload_file.xml',
         
     ],
-    # only loaded in demonstration mode
-    'demo': [
-        'demo/demo.xml',
-    ],
     'application': True
 }
 

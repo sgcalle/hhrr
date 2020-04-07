@@ -11,11 +11,12 @@
             "program": "C:\\odoo\\Odoo_13e\\server\\odoo-bin",
             "console": "integratedTerminal",
             "args": [
-                "--update=honduras_invoices",
+/*                 "--update=honduras_invoices", */
+/*                 "--update=multiple_discounts" */
 /*                "--update=hr_extends" */
 /*                 "--update=school_base", */
                 //"--update=point_of_sale",
-                //"--init=base",
+                "--init=base",
             ],
         }
     ]
