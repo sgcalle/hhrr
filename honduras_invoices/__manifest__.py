@@ -24,7 +24,6 @@
         'account',
         'sale',
         'product',
-        'point_of_sale',
         'account_reports',
         'school_base'
     ],
