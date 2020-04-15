@@ -16,7 +16,7 @@
     # Check https://github.com/odoo/odoo/blob/13.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Accounting',
-    'version': '0.3-beta',
+    'version': '0.5',
 
     # any module necessary for this one to work correctly
     'depends': [
@@ -25,7 +25,7 @@
         'sale',
         'product',
         'account_reports',
-        'school_base'
+        'school_finance'
     ],
 
     # always loaded
