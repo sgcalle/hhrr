@@ -119,6 +119,7 @@ class SaleOrderForStudents(models.Model):
         all_moves.write({"journal_id": self.journal_id.id})
         return all_moves
         
+        
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
     @api.onchange('product_uom', 'product_uom_qty')
