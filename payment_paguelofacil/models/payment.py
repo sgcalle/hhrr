@@ -23,7 +23,13 @@ INT_CURRENCIES = [
 ]
 
 def get_partner_address(partner_id):
-    return f"{partner_id.street + ',' } {partner_id.city + ','} {partner_id.state_id.name + ','} {partner_id.country_id.name + ','}  ".strip().rstrip(",")
+
+    street  = (partner_id.street + ",") if partner_id.street else ""
+    city    = (partner_id.city + ",") if partner_id.city else ""
+    state   = (partner_id.state_id.name + ",") if partner_id.state_id else ""
+    country = (partner_id.conutry_id.name + ",") if partner_id.country_id else ""
+
+    return f"{street} {city} {state} {country}".strip().rstrip(",")
 
 class PaymentAcquirerPaguelofacil(models.Model):
     _inherit = 'payment.acquirer'
@@ -70,8 +76,8 @@ class PaymentAcquirerPaguelofacil(models.Model):
         }
         data_json = json.dumps(data)
         resp = requests.request(method, url, data=data_json, headers=headers)
-        # Paguelofacil send us 200 code, but with a success variable if the request cannot be processed.
 
+        # Paguelofacil send us 200 code, but with a success variable if the request cannot be processed.
         resp_json = resp.json()
         if not resp_json.get("success", False):
 
@@ -123,7 +129,7 @@ class PaymentAcquirerPaguelofacil(models.Model):
                 "expYear": values["exp_year"],
                 "cvv": values["cvv"],
                 "firstName": values["first_name"],
-                "lastName": values["last_name"],
+"lastName": values["last_name"],
             }
         }
 
@@ -176,11 +182,18 @@ class PaymentAcquirerPaguelofacil(models.Model):
         if auth_data["status"] == 1:
             private_card = '*' * (len(card_number)-4) + card_number[-4:]
             payment_token = self.env['payment.token'].sudo().create({
+
                 'acquirer_id': int(data['acquirer_id']),
-                'partner_id': int(data['partner_id']),
-                'idtx': auth_data.get("idtx"),
-                'name': private_card,
+                'partner_id':  int(data['partner_id']),
+                'idtx':        auth_data.get("idtx"),
+                'name':        private_card,
+
+                'paguelofacil_email': email,
+                'paguelofacil_phone': phone,
+                'paguelofacil_address': address,
+
                 'acquirer_ref': auth_data.get("codOper")
+
             })
         else:
             debug_error_desc = auth_json.get("headerStatus", {}).get("description", "")
@@ -214,6 +227,10 @@ class PaymentTransactionPaguelofacil(models.Model):
     paguelofacil_return_url = fields.Char("Paguelofacil return url")
     paguelofacil_cod_oper   = fields.Char("Paguelofacil cod oper")
     paguelofacil_related_tx = fields.Char("Paguelofacil related tx")
+
+    paguelofacil_email   = fields.Char()
+    paguelofacil_phone   = fields.Char()
+    paguelofacil_address = fields.Char()
 
 
     def _get_processing_info(self):
@@ -253,10 +270,10 @@ class PaymentTransactionPaguelofacil(models.Model):
             "concept": (_("Payment in %s")) % self.acquirer_id.company_id.name,
             "description": self.reference,
             
-            'name': self.partner_id.name,
-            'email': email, 
-            'phone': self.partner_id.phone,
-            'address': get_partner_address(self.partner_id),
+            #'name': self.payment_token_id.paguelofacil_name,
+            'email': self.payment_token_id.paguelofacil_email,
+            'phone': self.payment_token_id.paguelofacil_phone,
+            'address': self.payment_token_id.paguelofacil_address,
         }
         if not self.env.context.get('off_session'):
             charge_params.update(setup_future_usage='off_session', off_session=False)
@@ -377,9 +394,9 @@ class PaymentTransactionPaguelofacil(models.Model):
 class PaymentTokenPaguelofacil(models.Model):
     _inherit = 'payment.token'
 
-    paguelofacil_email = fields.Char("Paguelofacil name")
-    paguelofacil_phone = fields.Char("Paguelofacil name")
-    paguelofacil_address = fields.Char("Paguelofacil name")
+    paguelofacil_email   = fields.Char()
+    paguelofacil_phone   = fields.Char()
+    paguelofacil_address = fields.Char()
 
     @api.model
     def paguelofacil_create(self, values):
