@@ -296,6 +296,7 @@ class PaymentTransactionPaguelofacil(models.Model):
             url = "/rest/processTx/RECURRENT"
             res = self.acquirer_id._paguelofacil_request(url, data=charge_params)
 
+
         self.acquirer_reference = res["data"]["codOper"]
         _logger.info('_paguelofacil_create_payment_intent: Values received:\n%s', pprint.pformat(res))
         if not acquirer_id.paguelofacil_save_card:
