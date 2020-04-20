@@ -8,6 +8,10 @@
         <field name="model">res.partner.make.sale</field>
         <field name="arch" type="xml">
             <form>
+                <group>
+                    <field name="journal_id"/>
+                </group>
+                <hr/>
                 <field name="order_line_ids" widget="section_and_note_one2many" mode="tree">
                     <tree string="Sales Order Lines" editable="bottom">
                         <control>

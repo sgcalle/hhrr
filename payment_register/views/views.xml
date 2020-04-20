@@ -1,0 +1,60 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+<!--
+    <record model="ir.ui.view" id="payment_register.list">
+      <field name="name">payment_register list</field>
+      <field name="model">payment_register.payment_register</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="value"/>
+          <field name="value2"/>
+        </tree>
+      </field>
+    </record>
+-->
+
+    <!-- actions opening views on models -->
+<!--
+    <record model="ir.actions.act_window" id="payment_register.action_window">
+      <field name="name">payment_register window</field>
+      <field name="res_model">payment_register.payment_register</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+-->
+
+    <!-- server action to the one above -->
+<!--
+    <record model="ir.actions.server" id="payment_register.action_server">
+      <field name="name">payment_register server</field>
+      <field name="model_id" ref="model_payment_register_payment_register"/>
+      <field name="state">code</field>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": model._name,
+        }
+      </field>
+    </record>
+-->
+
+    <!-- Top menu item -->
+<!--
+    <menuitem name="payment_register" id="payment_register.menu_root"/>
+-->
+    <!-- menu categories -->
+<!--
+    <menuitem name="Menu 1" id="payment_register.menu_1" parent="payment_register.menu_root"/>
+    <menuitem name="Menu 2" id="payment_register.menu_2" parent="payment_register.menu_root"/>
+-->
+    <!-- actions -->
+<!--
+    <menuitem name="List" id="payment_register.menu_1_list" parent="payment_register.menu_1"
+              action="payment_register.action_window"/>
+    <menuitem name="Server to list" id="payment_register" parent="payment_register.menu_2"
+              action="payment_register.action_server"/>
+-->
+  </data>
+</odoo>

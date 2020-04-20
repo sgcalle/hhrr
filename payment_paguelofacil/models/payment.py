@@ -16,7 +16,6 @@ from ..controllers.main import PaguelofacilController
 
 _logger = logging.getLogger(__name__)
 
-# The following currencies are integer only, see https://paguelofacil.com/docs/currencies#zero-decimal
 INT_CURRENCIES = [
     u'BIF', u'XAF', u'XPF', u'CLP', u'KMF', u'DJF', u'GNF', u'JPY', u'MGA', u'PYG', u'RWF', u'KRW',
     u'VUV', u'VND', u'XOF'
@@ -35,8 +34,10 @@ class PaymentAcquirerPaguelofacil(models.Model):
     _inherit = 'payment.acquirer'
 
     provider = fields.Selection(selection_add=[('paguelofacil', 'Paguelofacil')])
+    
     paguelofacil_cclw = fields.Char(required_if_provider='paguelofacil', groups='base.group_user')
     paguelofacil_api_key = fields.Char(required_if_provider='paguelofacil', groups='base.group_user')
+    paguelofacil_save_card = fields.Boolean("Save Card")
     paguelofacil_image_url = fields.Char(
         "Checkout Image URL", groups='base.group_user',
         help="A relative or absolute URL pointing to a square image of your "
@@ -129,7 +130,7 @@ class PaymentAcquirerPaguelofacil(models.Model):
                 "expYear": values["exp_year"],
                 "cvv": values["cvv"],
                 "firstName": values["first_name"],
-"lastName": values["last_name"],
+                "lastName": values["last_name"],
             }
         }
 
@@ -175,7 +176,8 @@ class PaymentAcquirerPaguelofacil(models.Model):
         auth_sending_json = self._build_res_json_auth(dict_auth)
 
         #url = "/rest/ccprocessing"
-        url = '/rest/processTx/AUTH'
+        #url = '/rest/processTx/AUTH'
+        url = '/rest/processTx/AUTH_CAPTURE'
         auth_json = acquirer_id._paguelofacil_request(url, data=auth_sending_json, method='POST')
 
         auth_data = auth_json["data"]
@@ -192,8 +194,9 @@ class PaymentAcquirerPaguelofacil(models.Model):
                 'paguelofacil_phone': phone,
                 'paguelofacil_address': address,
 
-                'acquirer_ref': auth_data.get("codOper")
-
+                'acquirer_ref': auth_data.get("codOper"),
+                'is_auth_caputure': True,
+                'auth_json': json.dumps(auth_json)
             })
         else:
             debug_error_desc = auth_json.get("headerStatus", {}).get("description", "")
@@ -232,6 +235,8 @@ class PaymentTransactionPaguelofacil(models.Model):
     paguelofacil_phone   = fields.Char()
     paguelofacil_address = fields.Char()
 
+    paguelofacil_cod_oper = fields.Char()
+
 
     def _get_processing_info(self):
         res = super()._get_processing_info()
@@ -259,32 +264,48 @@ class PaymentTransactionPaguelofacil(models.Model):
 
     def _paguelofacil_create_payment_intent(self, acquirer_ref=None, email=None):
         SequenceEnv = self.env["ir.sequence"]
-        next_tax_amount = float(SequenceEnv.next_by_code("paguelofacil.sequence"))
+        token_id = self.payment_token_id
+        acquirer_id = self.acquirer_id
+        res = {}
 
-        charge_params = {
-            'cclw': self.acquirer_id._get_cclw(),
-            'taxAmount': 0.0, #next_tax_amount,
-            'codOper': acquirer_ref,
+        if token_id.is_auth_caputure:
+            res = json.loads(token_id.auth_json)
+            token_id.write({
+                "is_auth_caputure": False,
+                "auth_json": "",
+            })
+        else:
+            next_tax_amount = float(SequenceEnv.next_by_code("paguelofacil.sequence"))
 
-            'amount': self.amount,
-            "concept": (_("Payment in %s")) % self.acquirer_id.company_id.name,
-            "description": self.reference,
-            
-            #'name': self.payment_token_id.paguelofacil_name,
-            'email': self.payment_token_id.paguelofacil_email,
-            'phone': self.payment_token_id.paguelofacil_phone,
-            'address': self.payment_token_id.paguelofacil_address,
-        }
-        if not self.env.context.get('off_session'):
-            charge_params.update(setup_future_usage='off_session', off_session=False)
-        _logger.info('_paguelofacil_create_payment_intent: Sending values to paguelofacil, values:\n%s', pprint.pformat(charge_params))
+            charge_params = {
+                'cclw': self.acquirer_id._get_cclw(),
+                'taxAmount': 0.0, #next_tax_amount,
+                'codOper': acquirer_ref,
 
-        url = "/rest/processTx/RECURRENT"
-        res = self.acquirer_id._paguelofacil_request(url, data=charge_params)
-        if res.get('charges') and res.get('charges').get('total_count'):
-            res = res.get('charges').get('data')[0]
+                'amount': self.amount,
+                "concept": (_("Payment in %s")) % self.acquirer_id.company_id.name,
+                "description": self.reference,
+                
+                #'name': self.payment_token_id.paguelofacil_name,
+                'email': self.payment_token_id.paguelofacil_email,
+                'phone': self.payment_token_id.paguelofacil_phone,
+                'address': self.payment_token_id.paguelofacil_address,
+            }
+            if not self.env.context.get('off_session'):
+                charge_params.update(setup_future_usage='off_session', off_session=False)
+            _logger.info('_paguelofacil_create_payment_intent: Sending values to paguelofacil, values:\n%s', pprint.pformat(charge_params))
 
-        _logger.info('_paguelofacil_create_payment_intent: Values received:\n%s', pprint.pformat(res))
+            url = "/rest/processTx/RECURRENT"
+            res = self.acquirer_id._paguelofacil_request(url, data=charge_params)
+            if res.get('charges') and res.get('charges').get('total_count'):
+                res = res.get('charges').get('data')[0]
+
+            _logger.info('_paguelofacil_create_payment_intent: Values received:\n%s', pprint.pformat(res))
+
+        self.acquirer_reference = res["codOper"]
+        if not acquirer_id.paguelofacil_save_card:
+            token_id.sudo().unlink()
+
         return res
 
     def paguelofacil_s2s_do_transaction(self, **kwargs):
@@ -397,6 +418,8 @@ class PaymentTokenPaguelofacil(models.Model):
     paguelofacil_email   = fields.Char()
     paguelofacil_phone   = fields.Char()
     paguelofacil_address = fields.Char()
+    is_auth_caputure     = fields.Boolean()
+    auth_json            = fields.Char()
 
     @api.model
     def paguelofacil_create(self, values):

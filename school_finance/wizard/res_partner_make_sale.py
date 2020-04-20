@@ -8,6 +8,7 @@ class ResPartnerMakeSale(models.TransientModel):
     _description = "Make a sale for a partner"
 
     order_line_ids = fields.Many2many("sale.order.line", string="Order Lines", ondelete="cascade")
+    journal_id = fields.Many2one("account.journal", string="Journal", domain=[("type", "=", "sale")])
 
     @api.model
     def create(self, values):
@@ -19,6 +20,7 @@ class ResPartnerMakeSale(models.TransientModel):
                 SaleOrderEnv.create({
                     "date_order": datetime.now(), 
                     "partner_id": partner_id.id,
+                    "journal_id": values["journal_id"],
                     "order_line": values["order_line_ids"]
                 })
 

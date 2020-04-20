@@ -48,6 +48,11 @@
                 <field name="hcr_date_of_issue"/>
                 <field name="hcr_date_of_expiration"/>
             </field>
+
+            <field name="passport_id" position="after">
+                <field name="hcr_passport_date_of_issue"/>
+                <field name="hcr_passport_date_of_expiration"/>
+            </field>
         </field>
     </record>
 

@@ -15,7 +15,8 @@
 /*                 "--update=honduras_invoices", */
 /*                 "--update=multiple_discounts" */
 /*                "--update=hr_extends" */
-                "--update=school_base",
+/*                 "--update=school_base", */
+                "--update=school_finance",
                 //"--update=point_of_sale",
 /*                 "--init=base", */
             ],

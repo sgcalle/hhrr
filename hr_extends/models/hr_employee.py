@@ -24,13 +24,16 @@ class EmployeeExtended(models.Model):
 
     # HCR: Health card number
 
-    hcr_date_of_issue = fields.Date("Date of issue")
-    hcr_date_of_expiration = fields.Date("Date of expiration")
+    hcr_date_of_issue = fields.Date("Health card date of issue")
+    hcr_date_of_expiration = fields.Date("Health card date of expiration")
 
     employee_job_status = fields.Selection(EMPLOYEE_JOB_STATUS, string="Employee job status")
     employee_active_status = fields.Selection(EMPLOYEE_ACTIVE_STATUS, string="Employee active status")
 
     employee_type_ids = fields.Many2many("hr_extends.employee.type", string="Employee Type")
+
+    hcr_passport_date_of_issue = fields.Date("Passport date of issue")
+    hcr_passport_date_of_expiration = fields.Date("Passport date of expiration")
 
 class EmployeeTypes(models.Model):
     _name = "hr_extends.employee.type"
