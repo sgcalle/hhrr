@@ -7,6 +7,7 @@ class ResPartnerMakeSale(models.TransientModel):
     _name = "res.partner.make.sale"
     _description = "Make a sale for a partner"
 
+
     order_line_ids = fields.Many2many("sale.order.line", string="Order Lines", ondelete="cascade")
     journal_id = fields.Many2one("account.journal", string="Journal", domain=[("type", "=", "sale")])
 
