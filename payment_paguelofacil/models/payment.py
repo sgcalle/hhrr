@@ -291,20 +291,15 @@ class PaymentTransactionPaguelofacil(models.Model):
                 'phone': self.payment_token_id.paguelofacil_phone,
                 'address': self.payment_token_id.paguelofacil_address,
             }
-            if not self.env.context.get('off_session'):
-                charge_params.update(setup_future_usage='off_session', off_session=False)
             _logger.info('_paguelofacil_create_payment_intent: Sending values to paguelofacil, values:\n%s', pprint.pformat(charge_params))
 
             url = "/rest/processTx/RECURRENT"
             res = self.acquirer_id._paguelofacil_request(url, data=charge_params)
-            if res.get('charges') and res.get('charges').get('total_count'):
-                res = res.get('charges').get('data')[0]
 
-            _logger.info('_paguelofacil_create_payment_intent: Values received:\n%s', pprint.pformat(res))
-
-        self.acquirer_reference = res["codOper"]
+        self.acquirer_reference = res["data"]["codOper"]
+        _logger.info('_paguelofacil_create_payment_intent: Values received:\n%s', pprint.pformat(res))
         if not acquirer_id.paguelofacil_save_card:
-            token_id.sudo().unlink()
+            token_id.sudo().active = False
 
         return res
 
