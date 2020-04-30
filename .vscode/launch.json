@@ -13,12 +13,12 @@
             "args": [
 /*                 "--update=payment_paguelofacil" */
 /*                 "--update=honduras_invoices", */
-/*                 "--update=qatar_invoices", */
-/*                 "--update=pos_payment_register",  */
+/*                 "--update=haque_invoices", */
+                "--update=pos_payment_register", 
 /*                 "--update=multiple_discounts" */
 /*                 "--update=hr_extends" */
 /*                 "--update=school_base", */
-                "--update=school_finance",
+/*                 "--update=school_finance", */
 /*                 "--update=point_of_sale", */
 /*                 "--init=base", */
             ],
