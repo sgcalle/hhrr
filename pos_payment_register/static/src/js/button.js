@@ -61,12 +61,13 @@ odoo.define('register_payments.pos_view', function(require) {
 
             var str_today = year + "-" + month + "-" + day;
 
+            "['&amp;', ('invoice_date_due', '&lt;', time.strftime('%Y-%m-%d')), ('state', '=', 'posted'), ('invoice_payment_state', '=', 'not_paid')]"
             this._rpc({
                 model: "account.move",
                 method: "search_read",
                 args: [
                     [
-                        ['invoice_date_due', '<', '2020-05-24'],
+                        // ['invoice_date_due', '<', str_today],
                         ['state', '=', 'posted'],
                         ['invoice_payment_state', '=', 'not_paid']
                     ],
@@ -172,7 +173,6 @@ odoo.define('register_payments.pos_view', function(require) {
                     this.invoice = invoice;
                 }
             }.bind(this)
-
             this._rpc({
                 model: "account.move",
                 method: "search_read",
@@ -180,7 +180,11 @@ odoo.define('register_payments.pos_view', function(require) {
                     [
                         ["id", "=", id]
                     ],
-                    ["name", "amount_total"]
+                    [
+                        "name",
+                        "amount_total",
+                        "partner_id"
+                    ]
                 ],
             }).then(fnc_select_element);
             /*             var order = this.get_order_by_id(id);
@@ -244,14 +248,16 @@ odoo.define('register_payments.pos_view', function(require) {
         invoice_register_popup: function(invoice) {
             self = this;
             var show_register_popup = function(values) {
-                var options = {}
-                options.invoice = invoice;
-                options.journal_ids = values[0];
+                var options = {
+                    "invoice": invoice,
+                    "journal_ids": values[0],
+                    "payment_method_ids": values[1]
+                }
                 self.gui.show_popup("invoice_payment", options);
             }
 
-            var journals = this._rpc({
-                model: "account.journal",
+            var payment_methods = this._rpc({
+                model: "account.payment.method",
                 method: "search_read",
                 args: [
                     [],
@@ -259,7 +265,16 @@ odoo.define('register_payments.pos_view', function(require) {
                 ],
             });
 
-            Promise.all([journals]).then(show_register_popup);
+            var journals = this._rpc({
+                model: "account.journal",
+                method: "search_read",
+                args: [
+                    [],
+                    ["display_name"]
+                ],
+            });
+
+            Promise.all([journals, payment_methods]).then(show_register_popup);
 
         }
     });
@@ -276,23 +291,38 @@ odoo.define('register_payments.pos_view', function(require) {
             this._super(options);
             this.invoice = options.invoice || {};
             this.payment_methods = options.payment_methods || [];
-            /*             options = options || {};
-                        this._super(options);
-
-                        this.list = options.list || [];
-                        this.is_selected = options.is_selected || function (item) { return false; }; */
             this.renderElement();
         },
         click_confirm: function(event) {
             alert("Invoice name: " + this.invoice.name);
 
+            var today = new Date();
+
+            var year = today.getFullYear();
+            var month = ("0" + today.getMonth()).slice(-2);
+            var day = ("0" + today.getDate()).slice(-2);
+
+            var str_today = year + "-" + month + "-" + day;
+
+            var journals = this._rpc({
+                model: "account.payment",
+                method: "create",
+                args: [
+                    [{
+                        "payment_type": "inbound",
+                        "journal_id": parseInt(this.$('#journal_id').val()),
+                        "partner_type": "customer",
+                        "amount": parseFloat(this.$('#amount').val()),
+                        "payment_method_id": parseInt(this.$('#payment_method_id').val()),
+                        "payment_date": str_today,
+                        "partner_id": parseInt(this.invoice.partner_id[0]),
+                        "communication": this.invoice.name
+                    }]
+                ],
+            }).then(function(result) {
+                alert("resultado:" + result);
+            });
             this.gui.close_popup();
-            /*             this.gui.close_popup();
-                        if (this.options.confirm) {
-                            var item = this.list[parseInt($(event.target).data('item-index'))];
-                            item = item ? item.item : item;
-                            this.options.confirm.call(self, item);
-                        } */
         }
     });
     gui.define_popup({ name: 'invoice_payment', widget: InvoicePaymentPopupWidget });

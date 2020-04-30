@@ -66,9 +66,6 @@
             <td>
                 <t t-esc="invoice.partner_id" />
             </td>
-            <!--             <td><t t-esc='invoice.partner_id[1]'/></td>
-            <td><t t-esc='invoice.date_order' /></td>
-            <td><t t-esc='invoice.amount_total' /></td> -->
         </tr>
     </t>
 
@@ -115,25 +112,34 @@
         <div role="dialog" class="modal-dialog">
             <div class="popup">
                 <header class="title">Register Payment</header>
-                <div class="">
-                    <t t-if="widget.options.journal_ids">
-                        <select name="journal_id" class="invoice-select">
-                            <t t-foreach="widget.options.journal_ids" t-as="journal_id">
-                                <option t-att-value="journal_id.id">
-                                    <t t-esc="journal_id.name" />
-                                </option>
-                            </t>
-                        </select>
-                    </t>
-                    <select name="payment_method" class="invoice-select">
-                        <t t-foreach="widget.pos.payment_methods" t-as="method">
-                            <option t-att-value="method.id" t-att-data-is-cash-count="method.is_cash_account" t-att-data-use-payment-terminal="method.use_payment_terminal">
-                                <t t-esc="method.name" />
-                            </option>
+                <article>
+                    <div class="row">
+                        <label for="journal_id">Journal:</label>
+                        <t t-if="widget.options.journal_ids">
+                            <select id="journal_id" name="journal_id" class="invoice-select">
+                                <t t-foreach="widget.options.journal_ids" t-as="journal_id">
+                                    <option t-att-value="journal_id.id">
+                                        <t t-esc="journal_id.display_name" />
+                                    </option>
+                                </t>
+                            </select>
                         </t>
-                    </select>
-                    <input type="number" name="amount" />
-                </div>
+                    </div>
+                    <div class="row">
+                        <label for="journal_id">Payment method:</label>
+                        <t t-if="widget.options.payment_method_ids">
+                            <select id="payment_method_id" name="payment_method_id" class="invoice-select">
+                                <t t-foreach="widget.options.payment_method_ids" t-as="payment_method_id">
+                                    <option t-att-value="payment_method_id.id">
+                                        <t t-esc="payment_method_id.name" />
+                                    </option>
+                                </t>
+                            </select>
+                        </t>
+                        <label for="amount">Amount:</label>
+                        <input id="amount" type="number" name="amount" />
+                    </div>
+                </article>
                 <footer class="footer">
                     <div class="button confirm">
                         Confirm
