@@ -9,8 +9,8 @@
     'author': "Eduwebgroup",
     'website': "http://www.eduwebgroup.com",
     
-    'category': 'accounting',
-    'version': '0.2',
+    'category': 'Accounting',
+    'version': '0.3',
 
     # any module necessary for this one to work correctly
     'depends': ['base', 'account', 'sale'],
@@ -18,6 +18,7 @@
     # always loaded
     'data': [
         'security/ir.model.access.csv',
+        'data/decimal_precision.xml',
         'views/views.xml',
         'views/templates.xml',
     ],

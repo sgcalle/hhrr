@@ -112,7 +112,7 @@
         <div role="dialog" class="modal-dialog">
             <div class="popup">
                 <header class="title">Register Payment</header>
-                <article>
+                <article class="container-fluid">
                     <div class="row">
                         <label for="journal_id">Journal:</label>
                         <t t-if="widget.options.journal_ids">
@@ -136,6 +136,8 @@
                                 </t>
                             </select>
                         </t>
+                    </div>
+                    <div class="row">
                         <label for="amount">Amount:</label>
                         <input id="amount" type="number" name="amount" />
                     </div>

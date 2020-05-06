@@ -14,7 +14,8 @@
 /*                 "--update=payment_paguelofacil" */
 /*                 "--update=honduras_invoices", */
 /*                 "--update=haque_invoices", */
-                "--update=pos_payment_register", 
+                "--update=qatar_invoices",
+/*                 "--update=pos_payment_register",  */
 /*                 "--update=multiple_discounts" */
 /*                 "--update=hr_extends" */
 /*                 "--update=school_base", */

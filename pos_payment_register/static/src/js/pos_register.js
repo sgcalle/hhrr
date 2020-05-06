@@ -61,13 +61,13 @@ odoo.define('register_payments.pos_view', function(require) {
 
             var str_today = year + "-" + month + "-" + day;
 
-            "['&amp;', ('invoice_date_due', '&lt;', time.strftime('%Y-%m-%d')), ('state', '=', 'posted'), ('invoice_payment_state', '=', 'not_paid')]"
+            // "['&amp;', ('invoice_date_due', '&lt;', time.strftime('%Y-%m-%d')), ('state', '=', 'posted'), ('invoice_payment_state', '=', 'not_paid')]"
             this._rpc({
                 model: "account.move",
                 method: "search_read",
                 args: [
                     [
-                        // ['invoice_date_due', '<', str_today],
+                        ['invoice_date_due', '<', str_today],
                         ['state', '=', 'posted'],
                         ['invoice_payment_state', '=', 'not_paid']
                     ],
@@ -269,7 +269,9 @@ odoo.define('register_payments.pos_view', function(require) {
                 model: "account.journal",
                 method: "search_read",
                 args: [
-                    [],
+                    [
+                        ["type", "in", ["bank", "cash"]]
+                    ],
                     ["display_name"]
                 ],
             });
@@ -316,6 +318,9 @@ odoo.define('register_payments.pos_view', function(require) {
                         "payment_method_id": parseInt(this.$('#payment_method_id').val()),
                         "payment_date": str_today,
                         "partner_id": parseInt(this.invoice.partner_id[0]),
+                        "invoice_ids": [
+                            [4, this.invoice.id, 0]
+                        ],
                         "communication": this.invoice.name
                     }]
                 ],
