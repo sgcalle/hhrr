@@ -1,36 +1,13 @@
 <?xml version="1.0" ?>
 <odoo>
+    <template id="qatar_invoices.report_purchasequotation_document" inherit_id="purchase.report_purchasequotation_document">
+        <xpath expr="." position="replace">
+            <t t-call="purchase.report_purchaseorder_document"/>
+        </xpath>
+    </template>
     <template id="qatar_invoices.report_purchaseorder_document" inherit_id="purchase.report_purchaseorder_document">
         <xpath expr="." position="replace">
             <t t-call="web.basic_layout">
-                <style>
-                    th {
-                    background: lightgray;
-                    text-align: center;
-                    }
-                    table.table-border-2 th, table.table-border-2 td {
-                        border: 2px solid black;
-                    }
-                    ol {
-                    counter-reset: list;
-                    }
-                    ol > li {
-                    list-style: none;
-                    }
-                    ol > li:before {
-                    content: counter(list) ") ";
-                    counter-increment: list;
-                    }
-                    
-                    .firma{
-                    padding: 1em;
-                    border-top: 2px solid black;
-                    }
-                    
-                    ul.no-decored li{
-                    list-style-type: none;
-                    }
-                </style>
                 <t t-set="o" t-value="o.with_context(lang=o.partner_id.lang)" />
                 <t t-set="address">
                     <div t-field="o.partner_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;, &quot;phone&quot;], &quot;no_marker&quot;: True, &quot;phone_icons&quot;: True}" />
@@ -49,58 +26,71 @@
 
                     </t>
                 </t>
-                <div class="page">
+                <div class="page page-qatar">
                     <header class="row">
                         <section class="col-6">
                             <div class="text-center">
-                                <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="width: 200px;" alt="Logo" />
+                                <img t-if="o.company_id.vertical_logo" t-att-src="image_data_uri(o.company_id.vertical_logo)" style="width: 100%;" alt="Logo" />
+                                <!--                                 <img t-att-src="image_data_uri(o.company_id.vertical_logo)" style="width: 200px;" alt="Logo" /> -->
                             </div>
                             <br />
                             <div>
                                 <ul class="no-decored p-0">
                                     <li>
-                                        <t t-if="o.company_id.country_id">
-                                            <span t-field="o.company_id.country_id" />
-                                            ,
-                                        </t>
-                                        <t t-if="o.company_id.state_id">
-                                            <span t-field="o.company_id.state_id" />
-                                            ,
-                                        </t>
-                                        <t t-if="o.company_id.city">
-                                            <span t-field="o.company_id.city" />
-                                            ,
-                                        </t>
                                         <t t-if="o.company_id.street">
                                             <span t-field="o.company_id.street" />
                                         </t>
                                     </li>
-                                    <li>
-                                        P.O BOX
-                                        <span t-field="o.company_id.zip" />
+                                    <li t-if="o.company_id.street2">
+                                        <span t-field="o.company_id.street2" />
                                     </li>
+                                    <li>
+                                        <t t-if="o.company_id.city">
+                                            <span t-field="o.company_id.city" />
+                                        </t>
+                                        <t t-if="o.company_id.state_id">
+                                            <span t-field="o.company_id.state_id.name" />
+                                            ,
+                                        </t>
+                                        <t t-if="o.company_id.country_id">
+                                            <span t-field="o.company_id.country_id" />
+                                        </t>
+                                    </li>
+
                                     <li>
                                         Phone:
                                         <span t-field="o.company_id.phone" />
                                     </li>
-                                    <li>Contact Person: Gregorio Alejandria</li>
+                                    <li>
+                                        Contact Person:
+                                        <span t-field="o.company_id.hr_officer" />
+                                    </li>
                                 </ul>
                             </div>
                         </section>
                         <section class="col-6">
-                            <section class="row">
-                                <h2 t-if="o.state == 'draft'">Request for Quotation</h2>
-                                <h2 t-if="o.state in ['sent', 'to approve']">Purchase Order</h2>
-                                <h2 t-if="o.state in ['purchase', 'done']">Purchase Order</h2>
+                            <section class="row w-100">
+                                <h2 t-if="o.state in ['draft', 'sent']">Request for Quotation</h2>
+                                <h2 t-if="o.state in ['to approve', 'purchase', 'done']">Purchase Order</h2>
                                 <h2 t-if="o.state == 'cancel'">Cancelled Purchase Order</h2>
                             </section>
 
                             <section class="row">
                                 <div class="col-6">
-                                    <strong>P.O</strong>
+                                    <strong t-if="o.state in ['draft', 'sent']">
+                                        R.F.Q
+                                    </strong>
+                                    <strong t-else="">
+                                        P.O
+                                    </strong>
                                 </div>
                                 <div class="col-6">
-                                    <span t-field="o.name" />
+                                    <h2 t-if="o.state in ['draft', 'sent']">
+                                        <t t-esc="o.name[3:]" />
+                                    </h2>
+                                    <h2 t-else="">
+                                        <t t-esc="o.name[1:]" />
+                                    </h2>
                                 </div>
                             </section>
 
@@ -125,33 +115,28 @@
                                                 <span t-field="o.partner_id" />
                                             </li>
                                             <li>
-                                                <t t-if="o.partner_id.state_id">
-                                                    <span t-field="o.partner_id.state_id" />
-                                                    ,
-                                                </t>
                                                 <t t-if="o.partner_id.street">
                                                     <span t-field="o.partner_id.street" />
                                                 </t>
                                             </li>
-                                            <li>
-                                                P.O BOX
-                                                <span t-field="o.partner_id.zip" />
-                                            </li>
-                                            <li>
-                                                Phone:
-                                                <span t-field="o.partner_id.phone" />
+                                            <li t-if="o.partner_id.street2">
+                                                <span t-field="o.partner_id.street2" />
                                             </li>
                                             <li>
                                                 <t t-if="o.partner_id.city">
                                                     <span t-field="o.partner_id.city" />
+                                                </t>
+                                                <t t-if="o.partner_id.state_id">
+                                                    <span t-field="o.partner_id.state_id.name" />
                                                     ,
+                                                </t>
+                                                <t t-if="o.partner_id.country_id">
+                                                    <span t-field="o.partner_id.country_id" />
                                                 </t>
                                             </li>
                                             <li>
-                                                <t t-if="o.partner_id.country_id">
-                                                    <span t-field="o.partner_id.country_id" />
-                                                    ,
-                                                </t>
+                                                Phone:
+                                                <span t-field="o.partner_id.phone" />
                                             </li>
                                             <li>
                                                 <t t-if="o.partner_id.email">
@@ -166,7 +151,7 @@
                         </section>
                     </header>
 
-                    <table class="table-border-2 w-100">
+                    <table class="table-border-2 w-100 invoice-table">
                         <thead>
                             <tr>
                                 <th name="th_item" width="14.28%">
@@ -245,11 +230,11 @@
                         <div class="col">
                             <table class="w-100">
                                 <tr>
-                                    <td width="14.28%">
+                                    <td width="28.56%">
                                         <strong>Purchase Req Date</strong>
                                     </td>
-                                    <td width="28.56%">
-                                        <strong t-field="o.date_planned" />
+                                    <td width="14.28%">
+                                        <strong t-field="o.date_order" />
                                     </td>
                                     <td colspan="2" width="28.56%" />
                                     <td width="14.28%" name="td_subtotal_label">
@@ -264,7 +249,13 @@
                                         <strong>Purchase Req No</strong>
                                     </td>
                                     <td>
-                                        <strong t-field="o.name" />
+                                        <strong t-if="o.state in ['draft', 'sent']">
+                                            <t t-esc="o.name[3:]" />
+                                        </strong>
+                                        <strong t-else="">
+                                            <t t-esc="o.name[1:]" />
+                                        </strong>
+
                                     </td>
                                     <td colspan="4" />
                                 </tr>
@@ -281,24 +272,21 @@
                     </div>
 
                     <section class="row">
-                        <div class="col-12">
-                            <div class="row">Term &amp; Condition</div>
-                            <br />
-                            <div class="row">
-
-                                <ol class="pl-0">
-                                    <li>Delivery Date</li>
-                                    <li>
-                                        Payment Terms:
-                                        <span t-field="o.payment_term_id" />
-                                    </li>
-                                    <li>Receiving Time:
-
-                                    </li>
-                                    <li>Submission: Submit Original Invoices</li>
-                                </ol>
-                            </div>
-                        </div>
+                        <div class="">Term &amp; Condition</div>
+                    </section>
+                    <section class="row">
+                        <ol class="pl-0">
+                            <li>Delivery Date</li>
+                            <li>
+                                Payment Terms:
+                                <span t-field="o.payment_term_id.note" />
+                            </li>
+                            <li>
+                                Receiving Time:
+                                <span t-field="o.date_planned" />
+                            </li>
+                            <li>Submission: Submit Original Invoices</li>
+                        </ol>
                     </section>
 
                     <br />
@@ -306,15 +294,15 @@
                     <br />
                     <section class="row">
                         <div class="col-4 p-2 firma">
-                            Gregorio Alejandria
+                            <span t-field="o.company_id.hr_officer" />
+                            <br />
                             HR/Procurement Officer
                         </div>
                         <div class="col-4" />
                         <div class="col-4 p-2 firma">
-                            Lyndel Christensen
-                            Director of Planning,
+                            <span t-field="o.company_id.director_of_hr" />
                             <br />
-                            Resources &amp; Businnes Development
+                            Director of human resources
                         </div>
                     </section>
 
@@ -322,6 +310,12 @@
                     <div class="oe_structure" />
                 </div>
             </t>
+        </xpath>
+    </template>
+
+    <template id="qatar_invoices.report_common" inherit_id="web.report_assets_common">
+        <xpath expr="." position="inside">
+            <link href="/qatar_invoices/static/src/css/qatar_reports.css" rel="stylesheet" />
         </xpath>
     </template>
 </odoo>
