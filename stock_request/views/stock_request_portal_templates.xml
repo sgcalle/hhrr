@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_my_home_menu_stock_request" name="Portal layout: stock_request menu entry" inherit_id="portal.portal_breadcrumbs" priority="50">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name == 'stock_request' or stock_request or new_stock_request" t-attf-class="breadcrumb-item #{'active ' if not (stock_request and new_stock_request) else ''}">
+                <a t-if="stock_request or new_stock_request" t-attf-href="/my/stock_request?{{ keep_query() }}">Stock Requests</a>
+                <t t-else="">Stock Requests</t>
+            </li>
+            <li t-if="stock_request" class="breadcrumb-item active">
+                <t t-esc="stock_request.name"/>
+            </li>
+            <li t-if="new_stock_request" class="breadcrumb-item active">
+                New
+            </li>
+        </xpath>
+    </template>
+
+    <template id="portal_my_home_stock_request" name="Portal My Home : stock_request entry" inherit_id="portal.portal_my_home" priority="50">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-if="any(user.employee_ids.sudo().mapped('stock_request_portal_access'))" t-call="portal.portal_docs_entry">
+                <t t-set="title">Stock Requests</t>
+                <t t-set="url" t-value="'/my/stock_request'"/>
+                <t t-set="count" t-value="stock_request_count"/>
+            </t>
+        </xpath>
+    </template>
+
+    <template id="portal_my_stock_requests" name="My Stock Requests">
+        <t t-call="portal.portal_layout">
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Stock Requests</t>
+            </t>
+            <div class="mb4">
+                <a t-attf-href="/my/stock_request/create?{{ keep_query() }}" class="btn btn-primary">Create Request</a>
+            </div>
+            <t t-if="not stock_requests">
+                <p>There are no stock requests found.</p>
+            </t>
+            <t t-if="stock_requests" t-call="portal.portal_table">
+                <thead>
+                    <tr class="active">
+                        <th>Stock Request #</th>
+                        <th>Requestor</th>
+                        <th>Department</th>
+                        <th>Date Created</th>
+                        <th>Date Required</th>
+                        <th>Status</th>
+                        <th>Stage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="stock_requests" t-as="stock_request">
+                        <td>
+                            <a t-attf-href="/my/stock_request/#{stock_request.id}?{{ keep_query() }}"><span t-esc="stock_request.name"/></a>
+                        </td>
+                        <td><span t-att-class="'text-muted' if stock_request.user_id == user else ''" t-field="stock_request.user_id"/></td>
+                        <td><span t-field="stock_request.department_id"/></td>
+                        <td><span t-field="stock_request.create_date"/></td>
+                        <td><span t-field="stock_request.date_required"/></td>
+                        <td>
+                            <span t-if="stock_request.state == 'pending'" class="badge badge-warning">Pending</span>
+                            <span t-if="stock_request.state == 'rejected'" class="badge badge-danger">Rejected</span>
+                            <span t-if="stock_request.state == 'canceled'" class="badge badge-dark">Canceled</span>
+                            <span t-if="stock_request.state == 'received'" class="badge badge-success">Received</span>
+                        </td>
+                        <td><span t-field="stock_request.stage_id"/></td>
+                    </tr>
+                </tbody>
+            </t>
+        </t>
+    </template>
+
+    <template id="portal_my_stock_request" name="My Stock Request">
+        <t t-call="portal.portal_layout">
+            <div class="container">
+                <form action="/my/stock_request/save" method="post">
+                    <div class="card o_stock_request_portal_form">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-sm-12 col-md-6">
+                                    <h4>
+                                        <t t-if="stock_request">
+                                            Stock Request <span t-esc="stock_request.name"/>
+                                        </t>
+                                        <t t-else="">New</t>
+                                        <span t-if="stock_request and stock_request.state == 'pending'" class="badge badge-warning">Pending</span>
+                                        <span t-if="stock_request and stock_request.state == 'rejected'" class="badge badge-danger">Rejected</span>
+                                        <span t-if="stock_request and stock_request.state == 'canceled'" class="badge badge-dark">Canceled</span>
+                                        <span t-if="stock_request and stock_request.state == 'received'" class="badge badge-success">Received</span>
+                                    </h4>
+                                    <div class="mb8">
+                                        Stage: <strong t-esc="stock_request.stage_id.name"/>
+                                    </div>
+                                    <div>
+                                        <button t-if="not readonly" type="submit" class="btn btn-primary mr4">Save</button>
+                                        <a t-if="readonly and stock_request.state == 'pending' and (not stock_request.prev_stage_id or stock_request.is_approver)" t-attf-href="/my/stock_request/#{stock_request.id}/edit?{{ keep_query() }}" class="btn btn-primary mr4">Edit</a>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 col-md-6 text-right">
+                                    <button t-if="stock_request and stock_request.state == 'pending' and stock_request.is_approver and stock_request.next_stage_id" type="submit" t-attf-formaction="/my/stock_request/#{stock_request.id}/approve?{{ keep_query() }}" class="btn btn-success ml4">Approve</button>
+                                    <a t-if="stock_request and stock_request.state == 'pending' and stock_request.is_approver and stock_request.next_stage_id" t-attf-href="/my/stock_request/#{stock_request.id}/reject?{{ keep_query() }}" class="btn btn-danger ml4">Reject</a>
+                                    <a t-if="stock_request and stock_request.state == 'pending' and not stock_request.next_stage_id and stock_request.user_id == user" t-attf-href="/my/stock_request/#{stock_request.id}/receive?{{ keep_query() }}" class="btn btn-success ml4">Mark Received</a>
+                                    <a t-if="stock_request and stock_request.state == 'canceled'" t-attf-href="/my/stock_request/#{stock_request.id}/pend?{{ keep_query() }}" class="btn btn-warning ml4">Reset to Pending</a>
+                                    <a t-if="stock_request and stock_request.state == 'pending'" t-attf-href="/my/stock_request/#{stock_request.id}/cancel?{{ keep_query() }}" class="btn btn-dark ml4">Cancel</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <input type="hidden" name="id" t-att-value="stock_request.id"/>
+                            <div class="mb32">
+                                <div class="row mb8" t-if="stock_request">
+                                    <div class="col-sm-12 col-md-3 col-lg-2"><strong for="user_id">Requestor</strong></div>
+                                    <div class="col-sm-12 col-md-9 col-lg-10">
+                                        <input class="form-control" type="text" name="user_id" id="user_id" disabled="true"
+                                            t-att-value="stock_request.user_id.sudo().name"/>
+                                    </div>
+                                </div>
+                                <div class="row mb8" t-if="stock_request">
+                                    <div class="col-sm-12 col-md-3 col-lg-2"><strong for="department_id">Department</strong></div>
+                                    <div class="col-sm-12 col-md-9 col-lg-10">
+                                        <input class="form-control" type="text" name="department_id" id="department_id" disabled="true"
+                                            t-att-value="stock_request.department_id.sudo().name"/>
+                                    </div>
+                                </div>
+                                <div class="row mb8">
+                                    <div class="col-sm-12 col-md-3 col-lg-2"><strong for="date_required">Date Required *</strong></div>
+                                    <div class="col-sm-12 col-md-9 col-lg-10">
+                                        <input class="form-control" type="date" name="date_required" id="date_required" t-att-disabled="readonly"
+                                            t-att-value="stock_request.date_required" required="true"/>
+                                    </div>
+                                </div>
+                                <h4 class="mt32">Products</h4>
+                                <div class="row mb8">
+                                    <div class="col-md-5 d-none d-md-block"><strong>Name</strong></div>
+                                    <div class="col-md-2 d-none d-md-block text-right"><strong>Quantity</strong></div>
+                                    <div class="col-md-2 d-none d-md-block"><strong>UoM</strong></div>
+                                    <div t-if="stock_request.picking_count > 0" class="col-md-2 d-none d-md-block text-right"><strong>Delivered</strong></div>
+                                </div>
+                                <div class="o_stock_request_portal_form_lines">
+                                    <div class="row mb8" t-if="not stock_request" id="line_0">
+                                        <input type="hidden" name="line_id_0" id="line_id_0" value="0"/>
+                                        <div class="col-12 col-md-5 mb8">
+                                            <select name="product_id_0" id="product_id_0" required="true" class="form-control o_stock_request_portal_form_product_id">
+                                                <option value="">--- Product ---</option>
+                                                <t t-foreach="products" t-as="product">
+                                                    <option t-att-value="product.id" t-esc="product.name"/>
+                                                </t>
+                                            </select>
+                                        </div>
+                                        <div class="col-5 col-md-2">
+                                            <input type="number" step="0.01" name="quantity_0" id="quantity_0" class="form-control text-right o_stock_request_portal_form_quantity" required="true"/>
+                                        </div>
+                                        <div class="col-5 col-md-2 o_stock_request_portal_form_uom_id" id="uom_id_0"><p>-</p></div>
+                                        <div t-if="not readonly" class="col-2 col-md-1">
+                                            <button type="button" class="btn btn-danger w-100 o_stock_request_portal_form_remove_line">-</button>
+                                        </div>
+                                    </div>
+                                    <t t-else="">
+                                        <t t-foreach="stock_request.line_ids" t-as="line">
+                                            <div class="row mb8" t-att-id="'line_' + str(line_index)">
+                                                <input type="hidden" t-att-name="'line_id_' + str(line_index)" t-att-id="'line_id_' + str(line_index)" t-att-value="line.id"/>
+                                                <div class="col-12 col-md-5 mb8">
+                                                    <select t-att-name="'product_id_' + str(line_index)" t-att-id="'product_id_' + str(line_index)" required="true" t-att-disabled="readonly"
+                                                        class="form-control o_stock_request_portal_form_product_id">
+                                                        <option value="">--- Product ---</option>
+                                                        <t t-foreach="products" t-as="product">
+                                                            <option t-att-selected="product == line.product_id" t-att-value="product.id" t-esc="product.name"/>
+                                                        </t>
+                                                    </select>
+                                                </div>
+                                                <div class="col-3 col-md-2">
+                                                    <input type="number" step="0.01" t-att-name="'quantity_' + str(line_index)" t-att-id="'quantity_' + str(line_index)"
+                                                        class="form-control text-right o_stock_request_portal_form_quantity" required="true" t-att-disabled="readonly" t-att-value="line.quantity"/>
+                                                </div>
+                                                <div class="col-4 col-md-2 o_stock_request_portal_form_name" t-att-id="'uom_id_' + str(line_index)"><t t-esc="line.uom_id.sudo().name"/></div>
+                                                <div t-if="stock_request.picking_count > 0" class="col-3 col-md-2">
+                                                    <input type="number" step="0.01" t-att-name="'delivered_quantity_' + str(line_index)" t-att-id="'delivered_quantity_' + str(line_index)"
+                                                        class="form-control text-right" required="true" disabled="true" t-att-value="line.delivered_quantity"/>
+                                                </div>
+                                                <div t-if="not readonly" class="col-2 col-md-1">
+                                                    <button type="button" class="btn btn-danger w-100 o_stock_request_portal_form_remove_line">-</button>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </t>
+                                </div>
+                                <button t-if="not readonly" type="button" class="btn btn-success col-12 mt8 o_stock_request_portal_form_add_line">Add Item</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="stock_picking_action_stock_request" model="ir.actions.act_window">
+        <field name="name">Stock Request Transfers</field>
+        <field name="res_model">stock.picking</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('stock_request_id','=',active_id)]</field>
+    </record>
+</odoo>
