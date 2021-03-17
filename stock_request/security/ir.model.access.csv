@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_stock_request,access.stock.request,model_stock_request,base.group_user,1,1,1,1
+access_stock_request_line,access.stock.request.line,model_stock_request_line,base.group_user,1,1,1,1
+access_stock_request_stage,access.stock.request.stage,model_stock_request_stage,base.group_user,1,0,0,0
+access_stock_request_stage_admin,access.stock.request.stage.admin,model_stock_request_stage,base.group_system,1,1,1,1
+access_stock_request_portal,access.stock.request.portal,model_stock_request,base.group_portal,1,1,1,0
+access_stock_request_line_portal,access.stock.request.line.portal,model_stock_request_line,base.group_portal,1,1,1,0
+access_stock_request_stage_portal,access.stock.request.stage.portal,model_stock_request_stage,base.group_portal,1,0,0,0

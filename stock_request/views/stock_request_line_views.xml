@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>    
+    <record id="stock_request_line_view_tree" model="ir.ui.view">
+        <field name="name">stock.request.line.view.tree</field>
+        <field name="model">stock.request.line</field>
+        <field name="arch" type="xml">
+            <tree string="Stock Request Lines">
+                <field name="request_id"/>
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="request_create_date"/>
+                <field name="date_required"/>
+                <field name="product_id"/>
+                <field name="uom_id"/>
+                <field name="quantity"/>
+                <field name="delivered_quantity"/>
+                <field name="unit_cost"/>
+                <field name="total_cost"/>
+                <field name="state"/>
+                <field name="stage_id"/>
+            </tree>
+        </field>
+    </record>
+    <record id="stock_request_line_view_search" model="ir.ui.view">
+        <field name="name">stock.request.line.view.search</field>
+        <field name="model">stock.request.line</field>
+        <field name="arch" type="xml">
+            <search string="Search Stock Request Lines">
+                <field name="request_id"/>
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <separator/>
+                <filter string="Pending" name="pending" domain="[('state','=','pending')]"/>
+                <filter string="Rejected" name="rejected" domain="[('state','=','rejected')]"/>
+                <filter string="Canceled" name="canceled" domain="[('state','=','canceled')]"/>
+                <filter string="Received" name="received" domain="[('state','=','received')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Employee" name="group_by_employee" domain="[]" context="{'group_by': 'employee_id'}"/>
+                    <filter string="Department" name="group_by_department" domain="[]" context="{'group_by': 'department_id'}"/>
+                    <filter string="Status" name="group_by_status" domain="[]" context="{'group_by': 'state'}"/>
+                    <filter string="Stage" name="group_by_stage" domain="[]" context="{'group_by': 'stage_id'}"/>
+                    <filter string="Product" name="group_by_product" domain="[]" context="{'group_by': 'product_id'}"/>
+                    <filter string="Date Requested" name="group_by_date_requested" domain="[]" context="{'group_by': 'request_create_date'}"/>
+                    <filter string="Date Required" name="group_by_date_required" domain="[]" context="{'group_by': 'date_required'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="stock_request_line_action" model="ir.actions.act_window">
+        <field name="name">Stock Requests</field>
+        <field name="res_model">stock.request.line</field>
+        <field name="view_mode">tree,graph,pivot</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <menuitem
+        id="stock_request_line_menu"
+        name="Stock Requests"
+        action="stock_request_line_action"
+        parent="hr.hr_menu_hr_reports"
+        sequence="10"/>
+    
+    <menuitem
+        id="stock_request_line_menu_inventory"
+        name="Stock Requests"
+        action="stock_request_line_action"
+        parent="stock.menu_warehouse_report"
+        sequence="170"/>
+</odoo>
